@@ -26,14 +26,6 @@
             }
 ?>&nbsp;
         </div>
-        <div class="col-md-2">Manager</div>
-        <div class="col-md-9">&nbsp;<?php
-            if ($this->data['Foundation']['manager']) {
-
-                echo $this->data['Foundation']['manager'];
-            }
-?>&nbsp;
-        </div>
         <div class="col-md-2">Representative</div>
         <div class="col-md-9">&nbsp;<?php
             if ($this->data['Foundation']['representative']) {

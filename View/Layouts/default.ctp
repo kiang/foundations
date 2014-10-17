@@ -20,7 +20,7 @@
     <body>
         <div class="container">
             <div id="header">
-                <h1><?php echo $this->Html->link('foundationtw', '/'); ?></h1>
+                <h1><?php echo $this->Html->link('社團/財團法人資料檢索', '/'); ?></h1>
             </div>
             <div id="content">
                 <div class="btn-group">

@@ -22,11 +22,6 @@
                 'div' => 'form-group',
                 'class' => 'form-control',
             ));
-            echo $this->Form->input('Foundation.manager', array(
-                'label' => 'Manager',
-                'div' => 'form-group',
-                'class' => 'form-control',
-            ));
             echo $this->Form->input('Foundation.representative', array(
                 'label' => 'Representative',
                 'div' => 'form-group',

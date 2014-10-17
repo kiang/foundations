@@ -20,7 +20,6 @@
                 <th><?php echo $this->Paginator->sort('Foundation.active_id', 'Active ID', array('url' => $url)); ?></th>
                 <th><?php echo $this->Paginator->sort('Foundation.name', 'Name', array('url' => $url)); ?></th>
                 <th><?php echo $this->Paginator->sort('Foundation.type', 'Type', array('url' => $url)); ?></th>
-                <th><?php echo $this->Paginator->sort('Foundation.manager', 'Manager', array('url' => $url)); ?></th>
                 <th><?php echo $this->Paginator->sort('Foundation.representative', 'Representative', array('url' => $url)); ?></th>
                 <th><?php echo $this->Paginator->sort('Foundation.founded', 'Founded', array('url' => $url)); ?></th>
                 <th><?php echo $this->Paginator->sort('Foundation.address', 'Address', array('url' => $url)); ?></th>
@@ -51,9 +50,6 @@
                     ?></td>
                     <td><?php
                     echo $item['Foundation']['type'];
-                    ?></td>
-                    <td><?php
-                    echo $item['Foundation']['manager'];
                     ?></td>
                     <td><?php
                     echo $item['Foundation']['representative'];
