@@ -118,10 +118,9 @@ class ImportShell extends AppShell {
 
     public function getTwDate($str) {
         $dateParts = explode('/', $str);
+        $dateParts[0] = intval($dateParts[0]) + 1911;
         if ($dateParts[0] > date('Y')) {
             $dateParts[0] = date('Y');
-        } else {
-            $dateParts[0] = intval($dateParts[0]) + 1911;
         }
         return implode('-', $dateParts);
     }
