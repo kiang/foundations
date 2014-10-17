@@ -17,9 +17,40 @@ class FoundationsController extends AppController {
     }
 
     function view($id = null) {
-        if (!$id || !$this->data = $this->Foundation->read(null, $id)) {
+        if (!empty($id)) {
+            $this->data = $this->Foundation->find('first', array(
+                'conditions' => array('Foundation.id' => $id),
+            ));
+            if (!empty($this->data['Foundation']['linked_id'])) {
+                $linkedId = $this->data['Foundation']['linked_id'];
+            } else {
+                $linkedId = $this->data['Foundation']['id'];
+            }
+            if (!empty($this->data['Foundation']['active_id'])) {
+                $activeId = $this->data['Foundation']['active_id'];
+            } else {
+                $activeId = $this->data['Foundation']['id'];
+            }
+        }
+        if (empty($this->data)) {
             $this->Session->setFlash(__('Please do following links in the page', true));
             $this->redirect(array('action' => 'index'));
+        } else {
+            $directors = $this->Foundation->Director->find('all', array(
+                'conditions' => array('Director.Foundation_id' => $linkedId),
+            ));
+            $logs = $this->Foundation->find('list', array(
+                'conditions' => array(
+                    'OR' => array(
+                        'Foundation.active_id' => $activeId,
+                        'Foundation.id' => $activeId,
+                    ),
+                ),
+                'fields' => array('id', 'submitted'),
+                'order' => array('Foundation.submitted' => 'DESC'),
+            ));
+            $this->set('directors', $directors);
+            $this->set('logs', $logs);
         }
     }
 
