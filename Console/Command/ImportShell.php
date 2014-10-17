@@ -22,6 +22,9 @@ class ImportShell extends AppShell {
         $valueStack = array();
         $directorStack = array();
         while ($line = fgetcsv($fh, 2048)) {
+            if (empty($line[12])) {
+                continue;
+            }
             if (!empty($line[13])) {
                 $line[13] = $this->getTwDate($line[13]);
             }
@@ -39,6 +42,9 @@ class ImportShell extends AppShell {
         $sn = 1;
         $titles = fgetcsv($fh, 2048);
         while ($line = fgetcsv($fh, 2048)) {
+            if (empty($line[12])) {
+                continue;
+            }
             $raw = $mysqli->real_escape_string(json_encode(array_combine($titles, $line)));
             foreach ($dateKeys AS $dateKey) {
                 $line[$dateKey] = !empty($line[$dateKey]) ? $this->getTwDate($line[$dateKey]) : '';
@@ -112,7 +118,11 @@ class ImportShell extends AppShell {
 
     public function getTwDate($str) {
         $dateParts = explode('/', $str);
-        $dateParts[0] = intval($dateParts[0]) + 1911;
+        if ($dateParts[0] > date('Y')) {
+            $dateParts[0] = date('Y');
+        } else {
+            $dateParts[0] = intval($dateParts[0]) + 1911;
+        }
         return implode('-', $dateParts);
     }
 
