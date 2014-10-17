@@ -4,7 +4,7 @@
     <table class="table table-bordered" id="DirectorsIndexTable">
         <thead>
             <tr>
-                <th>基金會</th>
+                <th>法人名稱</th>
                 <th>職稱</th>
                 <th>到職日</th>
             </tr>

@@ -8,12 +8,19 @@ class FoundationsController extends AppController {
     public $paginate = array();
     public $helpers = array();
 
-    function index() {
+    function index($name = null) {
+        $scope = array(
+            'Foundation.active_id IS NULL',
+        );
+        if (!empty($name)) {
+            $scope['Foundation.name LIKE'] = "%{$name}%";
+        }
         $this->paginate['Foundation'] = array(
             'limit' => 20,
             'order' => array('Foundation.submitted' => 'DESC'),
         );
-        $this->set('items', $this->paginate($this->Foundation, array('Foundation.active_id IS NULL')));
+        $this->set('url', array($name));
+        $this->set('items', $this->paginate($this->Foundation, $scope));
     }
 
     function view($id = null) {
