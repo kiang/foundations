@@ -21,6 +21,13 @@
         <div class="container">
             <div id="header">
                 <h1><?php echo $this->Html->link('社團/財團法人資料檢索', '/'); ?></h1>
+                <div class="pull-right">
+                    <input type="text" id="keyword" />
+                    <div class="btn-group">
+                        <a href="#" class="btn btn-default btn-foundation">找法人</a>
+                        <a href="#" class="btn btn-default btn-director">找個人</a>
+                    </div>
+                </div>
             </div>
             <div id="content">
                 <div class="btn-group">
@@ -62,8 +69,18 @@
         <script type="text/javascript">
             //<![CDATA[
             $(function () {
-                $('a.dialogControl').click(function () {
-                    dialogFull(this);
+                $('a.btn-foundation').click(function() {
+                    var keyword = $('input#keyword').val();
+                    if(keyword !== '') {
+                        location.href = '<?php echo $this->Html->url('/foundations/index/'); ?>' + encodeURIComponent(keyword);
+                    }
+                    return false;
+                });
+                $('a.btn-director').click(function() {
+                    var keyword = $('input#keyword').val();
+                    if(keyword !== '') {
+                        location.href = '<?php echo $this->Html->url('/directors/index/'); ?>' + encodeURIComponent(keyword);
+                    }
                     return false;
                 });
             });
