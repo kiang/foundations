@@ -11,8 +11,9 @@ class FoundationsController extends AppController {
     function index() {
         $this->paginate['Foundation'] = array(
             'limit' => 20,
+            'order' => array('Foundation.submitted' => 'DESC'),
         );
-        $this->set('items', $this->paginate($this->Foundation));
+        $this->set('items', $this->paginate($this->Foundation, array('Foundation.active_id IS NULL')));
     }
 
     function view($id = null) {
@@ -26,7 +27,7 @@ class FoundationsController extends AppController {
         $this->paginate['Foundation'] = array(
             'limit' => 20,
         );
-        $this->set('items', $this->paginate($this->Foundation));
+        $this->set('items', $this->paginate($this->Foundation, array('Foundation.active_id IS NULL')));
     }
 
     function admin_view($id = null) {

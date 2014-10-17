@@ -1,33 +1,18 @@
 <div id="FoundationsIndex">
-    <h2><?php echo __('Foundations', true); ?></h2>
-    <div class="clear actions">
-        <ul>
-        </ul>
-    </div>
     <p>
         <?php
         $url = array();
-
-        echo $this->Paginator->counter(array(
-            'format' => __('Page {:page} of {:pages}, showing {:current} records out of {:count} total, starting on record {:start}, ending on {:end}')
-        ));
         ?></p>
     <div class="paging"><?php echo $this->element('paginator'); ?></div>
     <table class="table table-bordered" id="FoundationsIndexTable">
         <thead>
             <tr>
-
-                <th><?php echo $this->Paginator->sort('Foundation.active_id', 'Active ID', array('url' => $url)); ?></th>
-                <th><?php echo $this->Paginator->sort('Foundation.name', 'Name', array('url' => $url)); ?></th>
-                <th><?php echo $this->Paginator->sort('Foundation.type', 'Type', array('url' => $url)); ?></th>
-                <th><?php echo $this->Paginator->sort('Foundation.representative', 'Representative', array('url' => $url)); ?></th>
-                <th><?php echo $this->Paginator->sort('Foundation.founded', 'Founded', array('url' => $url)); ?></th>
-                <th><?php echo $this->Paginator->sort('Foundation.address', 'Address', array('url' => $url)); ?></th>
-                <th><?php echo $this->Paginator->sort('Foundation.purpose', 'Purpose', array('url' => $url)); ?></th>
-                <th><?php echo $this->Paginator->sort('Foundation.donation', 'Donation', array('url' => $url)); ?></th>
-                <th><?php echo $this->Paginator->sort('Foundation.approved_by', 'Approved By', array('url' => $url)); ?></th>
-                <th><?php echo $this->Paginator->sort('Foundation.fund', 'Fund', array('url' => $url)); ?></th>
-                <th><?php echo $this->Paginator->sort('Foundation.closed', 'Closed', array('url' => $url)); ?></th>
+                <th>名稱</th>
+                <th>代表人</th>
+                <th>成立目的</th>
+                <th><?php echo $this->Paginator->sort('Foundation.fund', '財產總額', array('url' => $url)); ?></th>
+                <th><?php echo $this->Paginator->sort('Foundation.founded', '創立日期', array('url' => $url)); ?></th>
+                <th><?php echo $this->Paginator->sort('Foundation.submitted', '更新日期', array('url' => $url)); ?></th>
                 <th class="actions"><?php echo __('Action', true); ?></th>
             </tr>
         </thead>
@@ -41,39 +26,23 @@
                 }
                 ?>
                 <tr<?php echo $class; ?>>
-
-                    <td><?php
-                    echo $item['Foundation']['active_id'];
-                    ?></td>
                     <td><?php
                     echo $item['Foundation']['name'];
-                    ?></td>
-                    <td><?php
-                    echo $item['Foundation']['type'];
                     ?></td>
                     <td><?php
                     echo $item['Foundation']['representative'];
                     ?></td>
                     <td><?php
-                    echo $item['Foundation']['founded'];
-                    ?></td>
-                    <td><?php
-                    echo $item['Foundation']['address'];
-                    ?></td>
-                    <td><?php
                     echo $item['Foundation']['purpose'];
-                    ?></td>
-                    <td><?php
-                    echo $item['Foundation']['donation'];
-                    ?></td>
-                    <td><?php
-                    echo $item['Foundation']['approved_by'];
                     ?></td>
                     <td><?php
                     echo $item['Foundation']['fund'];
                     ?></td>
                     <td><?php
-                    echo $item['Foundation']['closed'];
+                    echo $item['Foundation']['founded'];
+                    ?></td>
+                    <td><?php
+                    echo $item['Foundation']['submitted'];
                     ?></td>
                     <td class="actions">
                         <?php echo $this->Html->link(__('View', true), array('action' => 'view', $item['Foundation']['id']), array('class' => 'FoundationsIndexControl')); ?>
@@ -84,14 +53,4 @@
     </table>
     <div class="paging"><?php echo $this->element('paginator'); ?></div>
     <div id="FoundationsIndexPanel"></div>
-    <script type="text/javascript">
-        //<![CDATA[
-        $(function() {
-            $('#FoundationsIndexTable th a, div.paging a, a.FoundationsIndexControl').click(function() {
-                $('#FoundationsIndex').parent().load(this.href);
-                return false;
-            });
-        });
-        //]]>
-    </script>
 </div>
