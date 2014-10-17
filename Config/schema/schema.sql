@@ -107,7 +107,7 @@ CREATE TABLE `foundations` (
   `purpose` text COLLATE utf8_unicode_ci,
   `donation` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `approved_by` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `fund` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `fund` bigint(16) NOT NULL,
   `closed` date DEFAULT NULL,
   `raw` text COLLATE utf8_unicode_ci NOT NULL,
   `submitted` date NOT NULL,
@@ -176,4 +176,4 @@ CREATE TABLE `members` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-10-17 23:00:27
+-- Dump completed on 2014-10-17 23:28:18
