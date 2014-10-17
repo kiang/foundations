@@ -8,6 +8,13 @@ class DirectorsController extends AppController {
     public $paginate = array();
     public $helpers = array();
 
+    public function beforeFilter() {
+        parent::beforeFilter();
+        if (isset($this->Auth)) {
+            $this->Auth->allow('index');
+        }
+    }
+
     function index($name = null) {
         if (!empty($name)) {
             $this->paginate['Director'] = array(
