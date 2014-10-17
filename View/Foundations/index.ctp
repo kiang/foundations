@@ -13,7 +13,6 @@
                 <th><?php echo $this->Paginator->sort('Foundation.fund', '財產總額', array('url' => $url)); ?></th>
                 <th><?php echo $this->Paginator->sort('Foundation.founded', '創立日期', array('url' => $url)); ?></th>
                 <th><?php echo $this->Paginator->sort('Foundation.submitted', '更新日期', array('url' => $url)); ?></th>
-                <th class="actions"><?php echo __('Action', true); ?></th>
             </tr>
         </thead>
         <tbody>
@@ -26,27 +25,23 @@
                 }
                 ?>
                 <tr<?php echo $class; ?>>
+                    <td>
+                        <?php echo $this->Html->link($item['Foundation']['name'], array('action' => 'view', $item['Foundation']['id'])); ?></td>
                     <td><?php
-                    echo $item['Foundation']['name'];
-                    ?></td>
+                        echo $this->Html->link($item['Foundation']['representative'], '/directors/index/' . $item['Foundation']['representative']);
+                        ?></td>
                     <td><?php
-                    echo $item['Foundation']['representative'];
-                    ?></td>
+                        echo $item['Foundation']['purpose'];
+                        ?></td>
                     <td><?php
-                    echo $item['Foundation']['purpose'];
-                    ?></td>
+                        echo $item['Foundation']['fund'];
+                        ?></td>
                     <td><?php
-                    echo $item['Foundation']['fund'];
-                    ?></td>
+                        echo $item['Foundation']['founded'];
+                        ?></td>
                     <td><?php
-                    echo $item['Foundation']['founded'];
-                    ?></td>
-                    <td><?php
-                    echo $item['Foundation']['submitted'];
-                    ?></td>
-                    <td class="actions">
-                        <?php echo $this->Html->link(__('View', true), array('action' => 'view', $item['Foundation']['id']), array('class' => 'FoundationsIndexControl')); ?>
-                    </td>
+                        echo $item['Foundation']['submitted'];
+                        ?></td>
                 </tr>
             <?php }; // End of foreach ($items as $item) {  ?>
         </tbody>

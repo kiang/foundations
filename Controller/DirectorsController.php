@@ -8,33 +8,32 @@ class DirectorsController extends AppController {
     public $paginate = array();
     public $helpers = array();
 
-    function index($foreignModel = null, $foreignId = 0) {
-        $foreignId = intval($foreignId);
-        $foreignKeys = array();
-
-        $foreignKeys = array(
-            'Foundation' => 'Foundation_id',
-        );
-
-
-        $scope = array();
-        if (array_key_exists($foreignModel, $foreignKeys) && $foreignId > 0) {
-            $scope['Director.' . $foreignKeys[$foreignModel]] = $foreignId;
-        } else {
-            $foreignModel = '';
+    function index($name = null) {
+        if (!empty($name)) {
+            $this->paginate['Director'] = array(
+                'fields' => array(
+                    'Director.title',
+                    'Foundation.id',
+                    'Foundation.name',
+                    'Foundation.submitted',
+                ),
+                'limit' => 20,
+                'contain' => array(
+                    'Foundation',
+                ),
+                'order' => array(
+                    'Foundation.submitted' => 'DESC',
+                ),
+            );
+            $items = $this->paginate($this->Director, array('Director.name' => $name));
         }
-        $this->set('scope', $scope);
-        $this->paginate['Director']['limit'] = 20;
-        $items = $this->paginate($this->Director, $scope);
-        $this->set('items', $items);
-        $this->set('foreignId', $foreignId);
-        $this->set('foreignModel', $foreignModel);
-    }
-
-    function view($id = null) {
-        if (!$id || !$this->data = $this->Director->read(null, $id)) {
-            $this->Session->setFlash(__('Please do following links in the page', true));
-            $this->redirect(array('action' => 'index'));
+        if (!empty($items)) {
+            $this->set('items', $items);
+            $this->set('url', array($name));
+            $this->set('name', $name);
+        } else {
+            $this->Session->setFlash('輸入的條件找不到結果');
+            $this->redirect('/');
         }
     }
 

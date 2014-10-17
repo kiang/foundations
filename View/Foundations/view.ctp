@@ -27,7 +27,7 @@
         foreach ($directors AS $director) {
             ?><div class="col-md-2">
                 <?php echo $director['Director']['title']; ?>：
-                <?php echo $director['Director']['name']; ?>
+                <?php echo $this->Html->link($director['Director']['name'], '/directors/index/' . $director['Director']['name']); ?>
             </div><?php
         }
         ?>
