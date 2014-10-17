@@ -1,0 +1,259 @@
+---
+DOWN: 
+  drop_table: 
+    - acos
+    - aros
+    - aros_acos
+    - members
+    - groups
+    - directors
+    - foundations
+UP: 
+  create_table: 
+    acos: 
+      id: 
+        type: integer
+        null: false
+        length: 11
+        key: primary
+        primary: id
+      parent_id: 
+        type: integer
+        null: false
+        length: 11
+      model: 
+        type: string
+        null: false
+        length: 64
+      foreign_key: 
+        type: integer
+        null: false
+        length: 11
+      alias: 
+        type: string
+        default: 
+        length: 128
+      lft: 
+        type: integer
+        null: false
+        length: 11
+      rght: 
+        type: integer
+        null: false
+        length: 11
+    aros: 
+      id: 
+        type: integer
+        null: false
+        length: 11
+        key: primary
+        primary: id
+      parent_id: 
+        type: integer
+        null: false
+        length: 11
+      model: 
+        type: string
+        default: 
+        length: 64
+      foreign_key: 
+        type: integer
+        null: false
+        length: 11
+      alias: 
+        type: string
+        default: 
+        length: 128
+      lft: 
+        type: integer
+        null: false
+        length: 11
+      rght: 
+        type: integer
+        null: false
+        length: 11
+    aros_acos: 
+      id: 
+        type: integer
+        null: false
+        length: 11
+        key: primary
+        primary: id
+      aro_id: 
+        type: integer
+        null: false
+        length: 11
+      aco_id: 
+        type: integer
+        null: false
+        length: 11
+      _create: 
+        type: integer
+        null: false
+        default: 0
+        length: 2
+      _read: 
+        type: integer
+        null: false
+        default: 0
+        length: 2
+      _update: 
+        type: integer
+        null: false
+        default: 0
+        length: 2
+      _delete: 
+        type: integer
+        null: false
+        default: 0
+        length: 2
+    members: 
+      id: 
+        type: integer
+        null: false
+        length: 11
+        key: primary
+        primary: id
+      group_id: 
+        type: integer
+        null: false
+        length: 11
+      username: 
+        type: string
+        null: false
+        length: 64
+      password: 
+        type: string
+        null: false
+        length: 48
+      user_status: 
+        type: string
+        null: false
+        default: N
+        length: 1
+      created: 
+        type: datetime
+        null: false
+      modified: 
+        type: datetime
+        null: false
+    groups: 
+      id: 
+        type: integer
+        null: false
+        length: 11
+        key: primary
+        primary: id
+      parent_id: 
+        type: integer
+        null: false
+        length: 11
+      name: 
+        type: string
+        null: false
+        length: 64
+    group_permissions: 
+      id: 
+        type: integer
+        null: false
+        length: 11
+        key: primary
+        primary: id
+      parent_id: 
+        type: integer
+        null: false
+        length: 11
+      order: 
+        type: integer
+        null: false
+        length: 11
+      name: 
+        type: string
+        null: false
+        length: 64
+      description: 
+        type: string
+        null: true
+        length: 255
+      acos: 
+        type: string
+        null: false
+        length: 255
+    directors: 
+      id: 
+        type: integer
+        null: false
+        default: 
+        length: 11
+        key: primary
+        primary: id
+      Foundation_id: 
+        type: integer
+        null: false
+        default: 
+        length: 11
+        key: index
+      name: 
+        type: string
+        null: true
+        default: 
+      title: 
+        type: string
+        null: true
+        default: 
+    foundations: 
+      id: 
+        type: integer
+        null: false
+        default: 
+        length: 11
+        key: primary
+        primary: id
+      active_id: 
+        type: string
+        null: true
+        default: 
+      name: 
+        type: string
+        null: false
+        default: 
+      type: 
+        type: string
+        null: true
+        default: 
+      master: 
+        type: string
+        null: true
+        default: 
+      representative: 
+        type: string
+        null: true
+        default: 
+      founded: 
+        type: date
+        null: true
+        default: 
+      address: 
+        type: string
+        null: true
+        default: 
+      purpose: 
+        type: text
+        null: true
+        default: 
+      donation: 
+        type: string
+        null: true
+        default: 
+      approved_by: 
+        type: string
+        null: true
+        default: 
+      fund: 
+        type: string
+        null: true
+        default: 
+      closed: 
+        type: date
+        null: true
+        default: 
