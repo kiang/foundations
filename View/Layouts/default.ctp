@@ -31,14 +31,12 @@
             </div>
             <div id="content">
                 <div class="btn-group">
-                    <?php if ($this->Session->read('Auth.User.id')): ?>
+                    <?php if (Configure::read('loginMember.id')): ?>
                         <?php echo $this->Html->link('Foundations', '/admin/foundations', array('class' => 'btn')); ?>
                         <?php echo $this->Html->link('Directors', '/admin/directors', array('class' => 'btn')); ?>
                         <?php echo $this->Html->link('Members', '/admin/members', array('class' => 'btn')); ?>
                         <?php echo $this->Html->link('Groups', '/admin/groups', array('class' => 'btn')); ?>
                         <?php echo $this->Html->link('Logout', '/members/logout', array('class' => 'btn')); ?>
-                    <?php else: ?>
-                        <?php echo $this->Html->link('Login', '/members/login', array('class' => 'btn')); ?>
                     <?php endif; ?>
                     <?php
                     if (!empty($actions_for_layout)) {
@@ -52,15 +50,12 @@
                 <?php echo $this->Session->flash(); ?>
                 <div id="viewContent"><?php echo $content_for_layout; ?></div>
             </div>
-            <div id="footer">
-                <?php
-                echo $this->Html->link(
-                        $this->Html->image('cake.power.gif', array(
-                            'alt' => __("CakePHP: the rapid development php framework", true), 'border' => "0")
-                        ), 'http://www.cakephp.org/', array('target' => '_blank', 'escape' => false)
-                );
-                ?>
-                & <?php echo $this->Html->link('Just This Computer Studio', 'http://olc.tw/', array('target' => '_blank')); ?>
+            <div id="footer" class="container">
+                <hr />
+                <?php echo $this->Html->link('江明宗 . 政 . 路過', 'http://k.olc.tw/', array('target' => '_blank')); ?>
+                <?php if (!Configure::read('loginMember.id')): ?>
+                    / <?php echo $this->Html->link('Login', '/members/login'); ?>
+                <?php endif; ?>
             </div>
         </div>
         <?php
@@ -69,16 +64,16 @@
         <script type="text/javascript">
             //<![CDATA[
             $(function () {
-                $('a.btn-foundation').click(function() {
+                $('a.btn-foundation').click(function () {
                     var keyword = $('input#keyword').val();
-                    if(keyword !== '') {
+                    if (keyword !== '') {
                         location.href = '<?php echo $this->Html->url('/foundations/index/'); ?>' + encodeURIComponent(keyword);
                     }
                     return false;
                 });
-                $('a.btn-director').click(function() {
+                $('a.btn-director').click(function () {
                     var keyword = $('input#keyword').val();
-                    if(keyword !== '') {
+                    if (keyword !== '') {
                         location.href = '<?php echo $this->Html->url('/directors/index/'); ?>' + encodeURIComponent(keyword);
                     }
                     return false;
