@@ -16,7 +16,7 @@
         <div class="col-md-2">許可機關日期</div>
         <div class="col-md-10"><?php echo $this->data['Foundation']['approved_by']; ?>&nbsp;</div>
         <div class="col-md-2">財產總額</div>
-        <div class="col-md-10"><?php echo $this->Number->currency($this->data['Foundation']['fund']); ?>&nbsp;</div>
+        <div class="col-md-10"><span class="fund-currency"><?php echo $this->data['Foundation']['fund']; ?></span>&nbsp;</div>
         <div class="col-md-2">異動日期</div>
         <div class="col-md-10"><?php echo $this->data['Foundation']['submitted']; ?>&nbsp;</div>
     </div>
@@ -61,4 +61,11 @@
         ?>
     </div>
     <div class="clearfix"><br /></div>
+    <script>
+        $(function () {
+            $('span.fund-currency').each(function () {
+                $(this).html(zhutil.annotate($(this).html()));
+            });
+        })
+    </script>
 </div>

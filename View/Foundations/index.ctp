@@ -30,12 +30,12 @@
                     <td><?php
                         echo $this->Html->link($item['Foundation']['representative'], '/directors/index/' . $item['Foundation']['representative']);
                         ?></td>
-                    <td><?php
+                    <td class="col-md-4"><?php
                         echo $item['Foundation']['purpose'];
                         ?></td>
-                    <td><?php
-                        echo $this->Number->currency($item['Foundation']['fund']);
-                        ?></td>
+                    <td><span class="fund-currency"><?php
+                            echo $item['Foundation']['fund'];
+                            ?></span></td>
                     <td><?php
                         echo $item['Foundation']['founded'];
                         ?></td>
@@ -48,4 +48,11 @@
     </table>
     <div class="paging"><?php echo $this->element('paginator'); ?></div>
     <div id="FoundationsIndexPanel"></div>
+    <script>
+        $(function () {
+            $('span.fund-currency').each(function () {
+                $(this).html(zhutil.annotate($(this).html()));
+            });
+        })
+    </script>
 </div>

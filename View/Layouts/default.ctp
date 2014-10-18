@@ -14,6 +14,7 @@
         echo $this->Html->script('jquery');
         echo $this->Html->script('jquery-ui');
         echo $this->Html->script('olc');
+        echo $this->Html->script('zhutil.min');
         echo $scripts_for_layout;
         ?>
     </head>
