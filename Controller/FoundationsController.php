@@ -6,7 +6,7 @@ class FoundationsController extends AppController {
 
     public $name = 'Foundations';
     public $paginate = array();
-    public $helpers = array();
+    public $helpers = array('Number');
     
     public function beforeFilter() {
         parent::beforeFilter();
