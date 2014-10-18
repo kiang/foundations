@@ -2,10 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh-TW">
     <head>
         <?php echo $this->Html->charset(); ?>
-        <title>
-            foundationtw::
-            <?php echo $title_for_layout; ?>
-        </title><?php
+        <title><?php echo $title_for_layout; ?>社團/財團法人資料檢索</title><?php
+        $trailDesc = '社團/財團法人資料檢索提供簡單的介面檢索國內有登記立案的社團/財團法人';
+        if (!isset($desc_for_layout)) {
+            $desc_for_layout = $trailDesc;
+        } else {
+            $desc_for_layout .= $trailDesc;
+        }
+        echo $this->Html->meta('description', $desc_for_layout);
         echo $this->Html->meta('icon');
         echo $this->Html->css('jquery-ui');
         echo $this->Html->css('bootstrap');

@@ -1,6 +1,7 @@
 <?php
 
 App::uses('AppController', 'Controller');
+App::uses('Sanitize', 'Utility');
 
 class DirectorsController extends AppController {
 
@@ -17,6 +18,7 @@ class DirectorsController extends AppController {
 
     function index($name = null) {
         if (!empty($name)) {
+            $name = Sanitize::clean($name);
             $this->paginate['Director'] = array(
                 'fields' => array(
                     'Director.title',
@@ -38,6 +40,7 @@ class DirectorsController extends AppController {
             $this->set('items', $items);
             $this->set('url', array($name));
             $this->set('name', $name);
+            $this->set('title_for_layout', $name . ' @ ');
         } else {
             $this->Session->setFlash('輸入的條件找不到結果');
             $this->redirect('/');

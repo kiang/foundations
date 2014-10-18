@@ -1,13 +1,14 @@
 <?php
 
 App::uses('AppController', 'Controller');
+App::uses('Sanitize', 'Utility');
 
 class FoundationsController extends AppController {
 
     public $name = 'Foundations';
     public $paginate = array();
     public $helpers = array();
-    
+
     public function beforeFilter() {
         parent::beforeFilter();
         if (isset($this->Auth)) {
@@ -20,6 +21,7 @@ class FoundationsController extends AppController {
             'Foundation.active_id IS NULL',
         );
         if (!empty($name)) {
+            $name = Sanitize::clean($name);
             $scope['Foundation.name LIKE'] = "%{$name}%";
         }
         $this->paginate['Foundation'] = array(
@@ -27,6 +29,10 @@ class FoundationsController extends AppController {
             'order' => array('Foundation.submitted' => 'DESC'),
         );
         $this->set('url', array($name));
+        if(!empty($name)) {
+            $name = "{$name} 相關";
+        }
+        $this->set('title_for_layout', $name . '法人一覽 @ ');
         $this->set('items', $this->paginate($this->Foundation, $scope));
     }
 
@@ -63,6 +69,8 @@ class FoundationsController extends AppController {
                 'fields' => array('id', 'submitted'),
                 'order' => array('Foundation.submitted' => 'DESC'),
             ));
+            $this->set('title_for_layout', $this->data['Foundation']['name'] . ' @ ');
+            $this->set('desc_for_layout', "{$this->data['Foundation']['name']} {$this->data['Foundation']['purpose']} / ");
             $this->set('directors', $directors);
             $this->set('logs', $logs);
         }
