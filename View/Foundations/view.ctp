@@ -1,3 +1,6 @@
+<?php
+$c = new \NumberFormatter("zh-TW", \NumberFormatter::CURRENCY);
+?>
 <div id="FoundationsView">
     <h3><?php echo $this->data['Foundation']['name']; ?></h3>
     <div class="col-md-12">
@@ -16,7 +19,7 @@
         <div class="col-md-2">許可機關日期</div>
         <div class="col-md-10"><?php echo $this->data['Foundation']['approved_by']; ?>&nbsp;</div>
         <div class="col-md-2">財產總額</div>
-        <div class="col-md-10"><?php echo $this->data['Foundation']['fund']; ?>&nbsp;</div>
+        <div class="col-md-10"><?php echo $c->format($this->data['Foundation']['fund']); ?>&nbsp;</div>
         <div class="col-md-2">異動日期</div>
         <div class="col-md-10"><?php echo $this->data['Foundation']['submitted']; ?>&nbsp;</div>
     </div>

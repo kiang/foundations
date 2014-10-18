@@ -1,3 +1,6 @@
+<?php
+$c = new \NumberFormatter("zh-TW", \NumberFormatter::CURRENCY);
+?>
 <div id="FoundationsIndex">
     <p>
         <?php
@@ -34,7 +37,7 @@
                         echo $item['Foundation']['purpose'];
                         ?></td>
                     <td><?php
-                        echo $item['Foundation']['fund'];
+                        echo $c->format($item['Foundation']['fund']);
                         ?></td>
                     <td><?php
                         echo $item['Foundation']['founded'];
