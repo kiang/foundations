@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.5.38, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 5.5.40, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: kiang_foundation
 -- ------------------------------------------------------
--- Server version	5.5.38-0ubuntu0.14.04.1
+-- Server version	5.5.40-0ubuntu0.14.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -82,9 +82,10 @@ DROP TABLE IF EXISTS `directors`;
 CREATE TABLE `directors` (
   `id` binary(36) NOT NULL,
   `Foundation_id` binary(36) NOT NULL,
-  `name` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `title` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -99,19 +100,22 @@ CREATE TABLE `foundations` (
   `id` binary(36) NOT NULL,
   `active_id` binary(36) DEFAULT NULL,
   `linked_id` binary(36) DEFAULT NULL,
-  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `type` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-  `representative` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `representative` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `founded` date NOT NULL,
-  `address` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `purpose` text COLLATE utf8_unicode_ci,
-  `donation` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `approved_by` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `purpose` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `donation` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `approved_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `fund` bigint(16) NOT NULL,
   `closed` date DEFAULT NULL,
-  `raw` text COLLATE utf8_unicode_ci NOT NULL,
+  `court` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
+  `url` varchar(255) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL,
+  `url_id` varchar(32) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL,
   `submitted` date NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `name` (`name`(191))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -176,4 +180,4 @@ CREATE TABLE `members` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-10-17 23:28:18
+-- Dump completed on 2014-11-10 20:16:02
