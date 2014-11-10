@@ -3,126 +3,273 @@
 class ImportShell extends AppShell {
 
     public $uses = array('Foundation');
+    public $all_court = array(
+        'TPD' => '臺灣台北地方法院',
+        'PCD' => '臺灣新北地方法院',
+        'SLD' => '臺灣士林地方法院',
+        'TYD' => '臺灣桃園地方法院',
+        'SCD' => '臺灣新竹地方法院',
+        'MLD' => '臺灣苗栗地方法院',
+        'TCD' => '臺灣臺中地方法院',
+        'NTD' => '臺灣南投地方法院',
+        'CHD' => '臺灣彰化地方法院',
+        'ULD' => '臺灣雲林地方法院',
+        'CYD' => '臺灣嘉義地方法院',
+        'TND' => '臺灣臺南地方法院',
+        'KSD' => '臺灣高雄地方法院',
+        'PTD' => '臺灣屏東地方法院',
+        'TTD' => '臺灣臺東地方法院',
+        'HLD' => '臺灣花蓮地方法院',
+        'ILD' => '臺灣宜蘭地方法院',
+        'KLD' => '臺灣基隆地方法院',
+        'PHD' => '臺灣澎湖地方法院',
+        'KSY' => '臺灣高雄少年法院',
+        'LCD' => '褔建連江地方法院',
+        'KMD' => '福建金門地方法院',
+    );
+    public $dbKeys = array();
+    public $dataPath = '/home/kiang/public_html/foundationtw';
+    public $mysqli = false;
 
     public function main() {
         $this->batchImport();
     }
 
+    public function dumpDbKeys() {
+        $foundations = $this->Foundation->find('all', array(
+            'conditions' => array(
+                'Foundation.active_id IS NULL',
+            ),
+            'fields' => array('id', 'name', 'founded'),
+        ));
+        $fh = fopen(__DIR__ . '/data/dbKeys.csv', 'w');
+        foreach ($foundations AS $foundation) {
+            fputcsv($fh, array(
+                $foundation['Foundation']['name'] . $foundation['Foundation']['founded'],
+                $foundation['Foundation']['id'],
+            ));
+        }
+        fclose($fh);
+    }
+
     public function batchImport() {
         $db = ConnectionManager::getDataSource('default');
-        $mysqli = new mysqli($db->config['host'], $db->config['login'], $db->config['password'], $db->config['database']);
-        $items = array();
-        $dateKeys = array(5, 6, 7, 13, 21, 22, 23, 29, 30);
-        $escapesKeys = array(14, 15, 16, 17);
-        $fh = fopen(__DIR__ . '/data/all_detail.csv', 'r');
-        fgetcsv($fh, 2048);
+        $this->mysqli = new mysqli($db->config['host'], $db->config['login'], $db->config['password'], $db->config['database']);
+        $this->dbQuery('SET NAMES utf8mb4;');
         $stack = array();
-        $sql = array();
-        $sn = 1;
-        $valueStack = array();
-        $directorStack = array();
-        while ($line = fgetcsv($fh, 2048)) {
-            if (empty($line[12])) {
-                continue;
-            }
-            if (!empty($line[13])) {
-                $line[13] = $this->getTwDate($line[13]);
-            }
-            $key = $line[12] . $line[13];
-            if (!isset($stack[$key])) {
-                $stack[$key] = array(
-                    'id' => String::uuid(),
+        if (file_exists(__DIR__ . '/data/dbKeys.csv')) {
+            $dbKeysFh = fopen(__DIR__ . '/data/dbKeys.csv', 'r');
+            while ($line = fgetcsv($dbKeysFh, 1024)) {
+                $stack[$line[0]] = array(
+                    'id' => $line[1],
                     'linked_id' => '',
                     'linked_date' => 0,
                     'line' => array(),
                 );
             }
         }
-        rewind($fh);
+        $escapesKeys = array('主事務所', '目的', '捐助方法', '許可機關日期', '法人名稱', '法人代表');
+        $dateKeys = array('設立登記日期', '撤銷日期', '註銷日期', '公告日期', '收件日期');
+        $valueStack = $directorStack = array();
         $sn = 1;
-        $titles = fgetcsv($fh, 2048);
-        while ($line = fgetcsv($fh, 2048)) {
-            if (empty($line[12])) {
-                continue;
-            }
-            $raw = $mysqli->real_escape_string(json_encode(array_combine($titles, $line)));
-            foreach ($dateKeys AS $dateKey) {
-                $line[$dateKey] = !empty($line[$dateKey]) ? $this->getTwDate($line[$dateKey]) : '';
-            }
-            $key = $line[12] . $line[13];
+        foreach ($this->all_court AS $courtKey => $courtName) {
+            echo "processing {$this->dataPath}/output/lists/{$courtKey}.csv\n";
+            $listFh = fopen("{$this->dataPath}/output/lists/{$courtKey}.csv", 'r');
+            fgets($listFh, 2048);
+            /*
+             * $listLine = Array
+              (
+              [0] => 法院名稱
+              [1] => 登記案號
+              [2] => 登記號數
+              [3] => 案由
+              [4] => 法人名稱
+              [5] => 登記日期
+              [6] => 類別
+              [7] => 設立登記撤銷
+              [8] => 設立登記註銷
+              [9] => 明細
+              [10] => 檔案位置
+              [11] => ID
+              [12] => 法院代碼
+              [13] => page #
+              )
+             */
+            while ($listLine = fgetcsv($listFh, 2048)) {
+                /*
+                 * $detail[?]
+                  登記案號
+                  類別
+                  案由
+                  主任
+                  登記號數
+                  收件日期
+                  登記日期
+                  公告日期
+                  登記簿
+                  任期判定
+                  屆期判定
+                  法人代表
+                  法人名稱
+                  設立登記日期
+                  主事務所
+                  目的
+                  捐助方法
+                  許可機關日期
+                  存立時期
+                  財產總額
+                  結案原因
+                  結案日期
+                  歸檔日期
+                  發證日期
+                  送達代收人姓名
+                  送達代收人住址
+                  郵遞區號
+                  清算人
+                  註銷日期
+                  撤銷日期
+                  撤(註)銷機關文號
+                  撤(註)銷原因
+                  董監事
+                  分事務所
+                 */
 
-            $foundationId = String::uuid();
-            $closed = 'NULL';
-            if (!empty($line[30])) {
-                $closed = "'{$line[30]}'";
-            } elseif (!empty($line[29])) {
-                $closed = "'{$line[29]}'";
-            }
-            foreach ($escapesKeys AS $escapesKey) {
-                $line[$escapesKey] = $mysqli->real_escape_string($line[$escapesKey]);
-            }
-            if (empty($line[5])) {
-                $line[5] = $line[7];
-            }
-            $foundationSubmitted = strtotime($line[5]);
-            if ($foundationSubmitted > $stack[$key]['linked_date'] || $stack[$key]['linked_date'] === 0) {
-                $stack[$key]['linked_date'] = $foundationSubmitted;
-                $stack[$key]['linked_id'] = $foundationId;
-                $stack[$key]['line'] = $line;
-            }
-            $valueStack[] = "('{$foundationId}', '{$stack[$key]['id']}', NULL, '{$line[12]}', '{$line[1]}', '{$line[11]}', '{$line[13]}', '{$line[14]}', '{$line[15]}', '{$line[16]}', '{$line[17]}', '{$line[19]}', {$closed}, '{$raw}', '{$line[5]}')";
-            $directors = explode('|', $line[33]);
-            foreach ($directors AS $director) {
-                $director = explode(':', $director);
-                if (count($director) === 2) {
-                    $directorId = String::uuid();
-                    $directorStack[] = "('{$directorId}', '{$foundationId}', '{$director[1]}', '{$director[0]}')";
+                $detail = json_decode(file_get_contents("{$this->dataPath}/{$listLine[10]}"), true);
+                if(empty($detail['法人名稱'])) continue;
+                foreach ($dateKeys AS $dateKey) {
+                    $detail[$dateKey] = $this->getTwDate($detail[$dateKey]);
                 }
-            }
-            ++$sn;
+                foreach ($escapesKeys AS $escapesKey) {
+                    $detail[$escapesKey] = $this->mysqli->real_escape_string($detail[$escapesKey]);
+                }
+                $stackKey = $detail['法人名稱'] . $detail['設立登記日期'];
+                if (!isset($stack[$stackKey])) {
+                    $stack[$stackKey] = array(
+                        'id' => String::uuid(),
+                        'linked_id' => '',
+                        'linked_date' => 0,
+                        'line' => array(),
+                    );
+                }
+                $foundationId = String::uuid();
+                $closed = 'NULL';
+                if (!empty($detail['撤銷日期'])) {
+                    $closed = "'{$detail['撤銷日期']}'";
+                } elseif (!empty($detail['註銷日期'])) {
+                    $closed = "'{$detail['註銷日期']}'";
+                }
 
-            if ($sn > 50) {
-                $sn = 1;
-                $mysqli->query('INSERT INTO `foundations` VALUES ' . implode(',', $valueStack) . ';');
-                $mysqli->query('INSERT INTO `directors` VALUES ' . implode(',', $directorStack) . ';');
-                $valueStack = $directorStack = array();
+                if (empty($detail['收件日期'])) {
+                    $detail['收件日期'] = $detail['公告日期'];
+                }
+                $detail['法人代表'] = str_replace(array(' ', '　'), '', $detail['法人代表']);
+                $foundationSubmitted = strtotime($detail['收件日期']);
+                if ($foundationSubmitted > $stack[$stackKey]['linked_date'] || $stack[$stackKey]['linked_date'] === 0) {
+                    $stack[$stackKey]['linked_date'] = $foundationSubmitted;
+                    $stack[$stackKey]['linked_id'] = $foundationId;
+                    $stack[$stackKey]['line'] = $detail;
+                    $stack[$stackKey]['line']['closed'] = $closed;
+                    $stack[$stackKey]['line']['court'] = $courtKey;
+                    $stack[$stackKey]['line']['url'] = $listLine[9];
+                    $stack[$stackKey]['line']['url_id'] = $listLine[11];
+                }
+                $valueStack[] = implode(',', array(
+                    "('{$foundationId}'", //id
+                    "'{$stack[$stackKey]['id']}'", //active_id
+                    'NULL', //linked_id
+                    "'{$detail['法人名稱']}'", //name
+                    "'{$detail['類別']}'", //type
+                    "'{$detail['法人代表']}'", //representative
+                    "'{$detail['設立登記日期']}'", //founded
+                    "'{$detail['主事務所']}'", //address
+                    "'{$detail['目的']}'", //purpose
+                    "'{$detail['捐助方法']}'", //donation
+                    "'{$detail['許可機關日期']}'", //approved_by
+                    "'{$detail['財產總額']}'", //fund
+                    $closed, //closed
+                    "'{$courtKey}'", //court
+                    "'{$listLine[9]}'", //url
+                    "'{$listLine[11]}'", //url_id
+                    "'{$detail['收件日期']}')", //submitted
+                ));
+                foreach ($detail['董監事'] AS $director) {
+                    if (count($director) === 2) {
+                        $directorId = String::uuid();
+                        $director[1] = str_replace(array(' ', '　'), '', $director[1]);
+                        $director[1] = $this->mysqli->real_escape_string($director[1]);
+                        $directorStack[] = "('{$directorId}', '{$foundationId}', '{$director[1]}', '{$director[0]}')";
+                    }
+                }
+                ++$sn;
+
+                if ($sn > 50) {
+                    $sn = 1;
+                    $this->dbQuery('INSERT INTO `foundations` VALUES ' . implode(',', $valueStack) . ';');
+                    $this->dbQuery('INSERT INTO `directors` VALUES ' . implode(',', $directorStack) . ';');
+                    $valueStack = $directorStack = array();
+                }
             }
         }
         if (!empty($valueStack)) {
-            $mysqli->query('INSERT INTO `foundations` VALUES ' . implode(',', $valueStack) . ';');
-            $mysqli->query('INSERT INTO `directors` VALUES ' . implode(',', $directorStack) . ';');
+            $this->dbQuery('INSERT INTO `foundations` VALUES ' . implode(',', $valueStack) . ';');
+            $this->dbQuery('INSERT INTO `directors` VALUES ' . implode(',', $directorStack) . ';');
             $sn = 1;
             $valueStack = $directorStack = array();
         }
-        fclose($fh);
+        echo "processing final step\n";
 
         foreach ($stack AS $item) {
-            $closed = 'NULL';
-            if (!empty($item['line'][30])) {
-                $closed = "'{$item['line'][30]}'";
-            } elseif (!empty($item['line'][29])) {
-                $closed = "'{$item['line'][29]}'";
-            }
-            $valueStack[] = "('{$item['id']}', NULL, '{$item['linked_id']}', '{$item['line'][12]}', '{$item['line'][1]}', '{$item['line'][11]}', '{$item['line'][13]}', '{$item['line'][14]}', '{$item['line'][15]}', '{$item['line'][16]}', '{$item['line'][17]}', '{$item['line'][19]}', {$closed}, NULL, '{$item['line'][5]}')";
+            if(empty($item['linked_id'])) continue;
+            $valueStack[] = implode(',', array(
+                "('{$item['id']}'", //id
+                'NULL', //active_id
+                "'{$item['linked_id']}'", //linked_id
+                "'{$item['line']['法人名稱']}'", //name
+                "'{$item['line']['類別']}'", //type
+                "'{$item['line']['法人代表']}'", //representative
+                "'{$item['line']['設立登記日期']}'", //founded
+                "'{$item['line']['主事務所']}'", //address
+                "'{$item['line']['目的']}'", //purpose
+                "'{$item['line']['捐助方法']}'", //donation
+                "'{$item['line']['許可機關日期']}'", //approved_by
+                "'{$item['line']['財產總額']}'", //fund
+                $item['line']['closed'], //closed
+                "'{$item['line']['court']}'", //court
+                "'{$item['line']['url']}'", //url
+                "'{$item['line']['url_id']}'", //url_id
+                "'{$item['line']['收件日期']}')", //submitted
+            ));
             ++$sn;
             if ($sn > 50) {
                 $sn = 1;
-                $mysqli->query('INSERT INTO `foundations` VALUES ' . implode(',', $valueStack) . ';');
+                $this->dbQuery('INSERT INTO `foundations` VALUES ' . implode(',', $valueStack) . ';');
                 $valueStack = array();
             }
         }
         if (!empty($valueStack)) {
-            $mysqli->query('INSERT INTO `foundations` VALUES ' . implode(',', $valueStack) . ';');
+            $this->dbQuery('INSERT INTO `foundations` VALUES ' . implode(',', $valueStack) . ';');
         }
     }
 
     public function getTwDate($str) {
+        $str = trim($str);
+        if (empty($str)) {
+            return '';
+        }
         $dateParts = explode('/', $str);
         $dateParts[0] = intval($dateParts[0]) + 1911;
         if ($dateParts[0] > date('Y')) {
             $dateParts[0] = date('Y');
         }
         return implode('-', $dateParts);
+    }
+
+    public function dbQuery($sql) {
+        if (!$this->mysqli->query($sql)) {
+            printf("Error: %s\n", $this->mysqli->error);
+            echo $sql;
+            exit();
+        }
     }
 
 }
