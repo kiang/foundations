@@ -32,7 +32,7 @@ class ImportShell extends AppShell {
     public $mysqli = false;
 
     public function main() {
-        $this->batchImport();
+        $this->dumpDbKeys();
     }
 
     public function dumpDbKeys() {
@@ -41,6 +41,7 @@ class ImportShell extends AppShell {
                 'Foundation.active_id IS NULL',
             ),
             'fields' => array('id', 'name', 'founded'),
+            'order' => array('Foundation.founded' => 'ASC'),
         ));
         $fh = fopen(__DIR__ . '/data/dbKeys.csv', 'w');
         foreach ($foundations AS $foundation) {
