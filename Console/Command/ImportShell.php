@@ -33,6 +33,7 @@ class ImportShell extends AppShell {
 
     public function main() {
         $this->dumpDbKeys();
+        $this->batchImport();
     }
 
     public function dumpDbKeys() {
@@ -51,23 +52,41 @@ class ImportShell extends AppShell {
             ));
         }
         fclose($fh);
+        $foundations = $this->Foundation->find('list', array(
+            'fields' => array('url_id', 'url_id'),
+        ));
+        $fh = fopen(__DIR__ . '/data/urlKeys.csv', 'w');
+        foreach ($foundations AS $foundation) {
+            fputs($fh, $foundation . "\n");
+        }
+        fclose($fh);
     }
 
     public function batchImport() {
         $db = ConnectionManager::getDataSource('default');
         $this->mysqli = new mysqli($db->config['host'], $db->config['login'], $db->config['password'], $db->config['database']);
         $this->dbQuery('SET NAMES utf8mb4;');
-        $stack = array();
+        $stack = $urlKeys = array();
         if (file_exists(__DIR__ . '/data/dbKeys.csv')) {
             $dbKeysFh = fopen(__DIR__ . '/data/dbKeys.csv', 'r');
             while ($line = fgetcsv($dbKeysFh, 1024)) {
                 $stack[$line[0]] = array(
                     'id' => $line[1],
+                    'is_new' => false,
                     'linked_id' => '',
                     'linked_date' => 0,
                     'line' => array(),
                 );
             }
+            fclose($dbKeysFh);
+        }
+        if (file_exists(__DIR__ . '/data/urlKeys.csv')) {
+            $urlKeysFh = fopen(__DIR__ . '/data/urlKeys.csv', 'r');
+            while ($line = fgets($urlKeysFh, 512)) {
+                $line = trim($line);
+                $urlKeys[$line] = true;
+            }
+            fclose($urlKeysFh);
         }
         $escapesKeys = array('主事務所', '目的', '捐助方法', '許可機關日期', '法人名稱', '法人代表');
         $dateKeys = array('設立登記日期', '撤銷日期', '註銷日期', '公告日期', '收件日期');
@@ -97,6 +116,9 @@ class ImportShell extends AppShell {
               )
              */
             while ($listLine = fgetcsv($listFh, 2048)) {
+                if (isset($urlKeys[$listLine[11]])) {
+                    continue;
+                }
                 /*
                  * $detail[?]
                   登記案號
@@ -136,7 +158,8 @@ class ImportShell extends AppShell {
                  */
 
                 $detail = json_decode(file_get_contents("{$this->dataPath}/{$listLine[10]}"), true);
-                if(empty($detail['法人名稱'])) continue;
+                if (empty($detail['法人名稱']))
+                    continue;
                 foreach ($dateKeys AS $dateKey) {
                     $detail[$dateKey] = $this->getTwDate($detail[$dateKey]);
                 }
@@ -147,6 +170,7 @@ class ImportShell extends AppShell {
                 if (!isset($stack[$stackKey])) {
                     $stack[$stackKey] = array(
                         'id' => String::uuid(),
+                        'is_new' => true,
                         'linked_id' => '',
                         'linked_date' => 0,
                         'line' => array(),
@@ -220,31 +244,37 @@ class ImportShell extends AppShell {
         echo "processing final step\n";
 
         foreach ($stack AS $item) {
-            if(empty($item['linked_id'])) continue;
-            $valueStack[] = implode(',', array(
-                "('{$item['id']}'", //id
-                'NULL', //active_id
-                "'{$item['linked_id']}'", //linked_id
-                "'{$item['line']['法人名稱']}'", //name
-                "'{$item['line']['類別']}'", //type
-                "'{$item['line']['法人代表']}'", //representative
-                "'{$item['line']['設立登記日期']}'", //founded
-                "'{$item['line']['主事務所']}'", //address
-                "'{$item['line']['目的']}'", //purpose
-                "'{$item['line']['捐助方法']}'", //donation
-                "'{$item['line']['許可機關日期']}'", //approved_by
-                "'{$item['line']['財產總額']}'", //fund
-                $item['line']['closed'], //closed
-                "'{$item['line']['court']}'", //court
-                "'{$item['line']['url']}'", //url
-                "'{$item['line']['url_id']}'", //url_id
-                "'{$item['line']['收件日期']}')", //submitted
-            ));
-            ++$sn;
-            if ($sn > 50) {
-                $sn = 1;
-                $this->dbQuery('INSERT INTO `foundations` VALUES ' . implode(',', $valueStack) . ';');
-                $valueStack = array();
+            if (empty($item['linked_id'])) {
+                continue;
+            }
+            if ($item['is_new']) {
+                $valueStack[] = implode(',', array(
+                    "('{$item['id']}'", //id
+                    'NULL', //active_id
+                    "'{$item['linked_id']}'", //linked_id
+                    "'{$item['line']['法人名稱']}'", //name
+                    "'{$item['line']['類別']}'", //type
+                    "'{$item['line']['法人代表']}'", //representative
+                    "'{$item['line']['設立登記日期']}'", //founded
+                    "'{$item['line']['主事務所']}'", //address
+                    "'{$item['line']['目的']}'", //purpose
+                    "'{$item['line']['捐助方法']}'", //donation
+                    "'{$item['line']['許可機關日期']}'", //approved_by
+                    "'{$item['line']['財產總額']}'", //fund
+                    $item['line']['closed'], //closed
+                    "'{$item['line']['court']}'", //court
+                    "'{$item['line']['url']}'", //url
+                    "'{$item['line']['url_id']}'", //url_id
+                    "'{$item['line']['收件日期']}')", //submitted
+                ));
+                ++$sn;
+                if ($sn > 50) {
+                    $sn = 1;
+                    $this->dbQuery('INSERT INTO `foundations` VALUES ' . implode(',', $valueStack) . ';');
+                    $valueStack = array();
+                }
+            } else {
+                $this->dbQuery("UPDATE foundations SET linked_id = '{$item['linked_id']}' WHERE id = '{$item['id']}';");
             }
         }
         if (!empty($valueStack)) {
