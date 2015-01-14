@@ -33,7 +33,7 @@ class ImportShell extends AppShell {
 
     public function main() {
         $this->dumpDbKeys();
-        $this->batchImport();
+        //$this->batchImport();
     }
 
     public function dumpDbKeys() {
