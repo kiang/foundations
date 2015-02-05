@@ -17,7 +17,13 @@
         ?>
     </head>
     <body>
-        <div class="container" style="width: 100%;">
+        <div style="float: right; width: 160px;">
+            <ins class="adsbygoogle"
+                 style="display:inline-block;width:160px;height:600px"
+                 data-ad-client="ca-pub-5571465503362954"
+                 data-ad-slot="2983418827"></ins>
+        </div>
+        <div class="container" id="base-container" style="float: left;">
             <div id="header">
                 <h1><?php echo $this->Html->link('社團/財團法人資料檢索', '/'); ?></h1>
                 <div class="pull-right">
@@ -27,10 +33,6 @@
                         <a href="#" class="btn btn-default btn-director">找個人</a>
                     </div>
                 </div>
-                <ins class="adsbygoogle"
-                     style="display:inline-block;width:728px;height:90px"
-                     data-ad-client="ca-pub-5571465503362954"
-                     data-ad-slot="3997650427"></ins>
             </div>
             <div id="content">
                 <div class="btn-group">
@@ -66,6 +68,7 @@
                 <?php endif; ?>
             </div>
         </div>
+        <div class="clearfix"></div>
         <?php
         echo $this->element('sql_dump');
         echo $this->Html->script('jquery');
@@ -79,6 +82,7 @@
         <script type="text/javascript">
             //<![CDATA[
             $(function () {
+                $('div#base-container').width($('body').width() - 200);
                 $('a.btn-foundation').click(function () {
                     var keyword = $('input#keyword').val();
                     if (keyword !== '') {
