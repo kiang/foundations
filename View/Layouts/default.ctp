@@ -14,16 +14,10 @@
         echo $this->Html->css('jquery-ui');
         echo $this->Html->css('bootstrap');
         echo $this->Html->css('default');
-        echo $this->Html->script('bootstrap.min');
-        echo $this->Html->script('jquery');
-        echo $this->Html->script('jquery-ui');
-        echo $this->Html->script('olc');
-        echo $this->Html->script('zhutil.min');
-        echo $scripts_for_layout;
         ?>
     </head>
     <body>
-        <div class="container">
+        <div class="container" style="width: 100%;">
             <div id="header">
                 <h1><?php echo $this->Html->link('社團/財團法人資料檢索', '/'); ?></h1>
                 <div class="pull-right">
@@ -33,6 +27,10 @@
                         <a href="#" class="btn btn-default btn-director">找個人</a>
                     </div>
                 </div>
+                <ins class="adsbygoogle"
+                     style="display:inline-block;width:728px;height:90px"
+                     data-ad-client="ca-pub-5571465503362954"
+                     data-ad-slot="3997650427"></ins>
             </div>
             <div id="content">
                 <div class="btn-group">
@@ -56,6 +54,10 @@
                 <div id="viewContent"><?php echo $content_for_layout; ?></div>
             </div>
             <div id="footer" class="container">
+                <ins class="adsbygoogle"
+                     style="display:inline-block;width:728px;height:90px"
+                     data-ad-client="ca-pub-5571465503362954"
+                     data-ad-slot="5474383621"></ins>
                 <hr />
                 <?php echo $this->Html->link('江明宗 . 政 . 路過', 'http://k.olc.tw/', array('target' => '_blank')); ?>
                 / <?php echo $this->Html->link('關於本站', '/pages/about'); ?>
@@ -66,7 +68,14 @@
         </div>
         <?php
         echo $this->element('sql_dump');
+        echo $this->Html->script('jquery');
+        echo $this->Html->script('jquery-ui');
+        echo $this->Html->script('bootstrap.min');
+        echo $this->Html->script('olc');
+        echo $this->Html->script('zhutil.min');
+        echo $scripts_for_layout;
         ?>
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
         <script type="text/javascript">
             //<![CDATA[
             $(function () {
@@ -103,8 +112,10 @@
 
                 ga('create', 'UA-40055059-5', 'auto');
                 ga('send', 'pageview');
+                (adsbygoogle = window.adsbygoogle || []).push({});
 
             </script>
         <?php } ?>
+        <?php echo $this->fetch('script'); ?>
     </body>
 </html>

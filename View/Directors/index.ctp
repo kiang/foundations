@@ -33,15 +33,4 @@
         </tbody>
     </table>
     <div class="paging"><?php echo $this->element('paginator'); ?></div>
-    <div id="DirectorsIndexPanel"></div>
-    <script type="text/javascript">
-        //<![CDATA[
-        $(function () {
-            $('#DirectorsIndexTable th a, div.paging a, a.DirectorsIndexControl').click(function () {
-                $('#DirectorsIndex').parent().load(this.href);
-                return false;
-            });
-        });
-        //]]>
-    </script>
 </div>

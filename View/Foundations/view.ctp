@@ -69,11 +69,11 @@
         ?>
     </div>
     <div class="clearfix"><br /></div>
-    <script>
-        $(function () {
-            $('span.fund-currency').each(function () {
-                $(this).html(zhutil.approximate($(this).html(), {base: '萬', extra_decimal: 0}));
-            });
-        })
-    </script>
 </div>
+<script>
+    setTimeout(function () {
+        $('span.fund-currency').each(function () {
+            $(this).html(zhutil.approximate($(this).html(), {base: '萬', extra_decimal: 0}));
+        });
+    }, 500);
+</script>
