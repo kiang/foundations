@@ -80,7 +80,7 @@
         ?>
         <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
         <script type="text/javascript">
-            //<![CDATA[
+            (adsbygoogle = window.adsbygoogle || []).push({});
             $(function () {
                 $('div#base-container').width($('body').width() - 200);
                 $('a.btn-foundation').click(function () {
@@ -98,7 +98,6 @@
                     return false;
                 });
             });
-            //]]>
         </script>
         <?php if (Configure::read('debug') === 0) { ?>
             <script>
@@ -116,8 +115,6 @@
 
                 ga('create', 'UA-40055059-5', 'auto');
                 ga('send', 'pageview');
-                (adsbygoogle = window.adsbygoogle || []).push({});
-
             </script>
         <?php } ?>
         <?php echo $this->fetch('script'); ?>
