@@ -32,32 +32,60 @@ class ImportShell extends AppShell {
     public $mysqli = false;
 
     public function main() {
-        $this->batchImport();
+        //$this->batchImport();
         $this->dumpDbKeys();
     }
 
     public function dumpDbKeys() {
         $foundations = $this->Foundation->find('all', array(
-            'conditions' => array(
-                'Foundation.active_id IS NULL',
-            ),
-            'fields' => array('id', 'name', 'founded'),
+            'fields' => array('id', 'name', 'founded', 'approved_by', 'active_id'),
             'order' => array('Foundation.founded' => 'ASC'),
         ));
         $fh = fopen(__DIR__ . '/data/dbKeys.csv', 'w');
         foreach ($foundations AS $foundation) {
-            fputcsv($fh, array(
-                $foundation['Foundation']['name'] . $foundation['Foundation']['founded'],
-                $foundation['Foundation']['id'],
-            ));
+            if (empty($foundation['Foundation']['active_id'])) {
+                fputcsv($fh, array(
+                    $foundation['Foundation']['name'] . $foundation['Foundation']['founded'],
+                    $foundation['Foundation']['id'],
+                ));
+            }
         }
         fclose($fh);
-        $foundations = $this->Foundation->find('list', array(
-            'fields' => array('url_id', 'url_id'),
-        ));
         $fh = fopen(__DIR__ . '/data/urlKeys.csv', 'w');
         foreach ($foundations AS $foundation) {
-            fputs($fh, $foundation . "\n");
+            fputs($fh, $foundation['Foundation']['id'] . "\n");
+        }
+        fclose($fh);
+
+        $approvedKeys = array();
+        $fh = fopen(__DIR__ . '/data/approvedKeys.csv', 'w');
+        foreach ($foundations AS $foundation) {
+            $foundation['Foundation']['approved_by'] = strtr($foundation['Foundation']['approved_by'], array(
+                '一' => '1', '二' => '2', '三' => '3', '四' => '4', '五' => '5', '六' => '6', '七' => '7',
+                '八' => '8', '九' => '9', '１' => '1', '２' => '2', '３' => '3', '４' => '4', '５' => '5',
+                '６' => '6', '７' => '7', '８' => '8', '９' => '9', '０' => '0', 'Ｏ' => '0',
+                '（' => '(', '）' => ')', '　' => '', '︵' => '(', '︶' => ')'
+            ));
+            $foundation['Foundation']['approved_by'] = preg_replace(array(
+                '/([1-9])十/',
+                '/十([1-9])/',
+                '/十/',
+                '/廿([1-9])/',
+                '/廿/',
+                    ), array(
+                '${1}',
+                '1${1}',
+                '10',
+                '2${1}',
+                '20',
+                    ), $foundation['Foundation']['approved_by']);
+            if (false !== strpos($foundation['Foundation']['approved_by'], '字') && !isset($approvedKeys[$foundation['Foundation']['approved_by']])) {
+                fputcsv($fh, array(
+                    $foundation['Foundation']['approved_by'],
+                    $foundation['Foundation']['id'],
+                ));
+                $approvedKeys[$foundation['Foundation']['approved_by']] = true;
+            }
         }
         fclose($fh);
     }
