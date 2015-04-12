@@ -32,7 +32,7 @@ class ImportShell extends AppShell {
     public $mysqli = false;
 
     public function main() {
-        //$this->batchImport();
+        $this->batchImport();
         $this->dumpDbKeys();
     }
 
