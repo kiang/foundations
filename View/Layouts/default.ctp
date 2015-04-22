@@ -98,7 +98,7 @@
         <script type="text/javascript">
                     (adsbygoogle = window.adsbygoogle || []).push({});
                     $(function () {
-                        $('div#base-container').width($('body').width() - 200);
+                        $('div#base-container').width($(window).width() - 250);
                         $('a.btn-foundation').click(function () {
                             var keyword = $('input#keyword').val();
                             if (keyword !== '') {
