@@ -43,12 +43,12 @@ class FoundationsController extends AppController {
             ));
             if (!empty($this->data['Foundation']['linked_id'])) {
                 $linkedId = $this->data['Foundation']['linked_id'];
-            } else {
+            } elseif(isset($this->data['Foundation']['id'])) {
                 $linkedId = $this->data['Foundation']['id'];
             }
             if (!empty($this->data['Foundation']['active_id'])) {
                 $activeId = $this->data['Foundation']['active_id'];
-            } else {
+            } elseif(isset($this->data['Foundation']['id'])) {
                 $activeId = $this->data['Foundation']['id'];
             }
         }
