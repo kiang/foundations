@@ -41,13 +41,18 @@ class ImportShell extends AppShell {
             'fields' => array('id', 'name', 'founded', 'approved_by', 'active_id'),
             'order' => array('Foundation.founded' => 'ASC'),
         ));
+        $check = array();
         $fh = fopen(__DIR__ . '/data/dbKeys.csv', 'w');
         foreach ($foundations AS $foundation) {
             if (empty($foundation['Foundation']['active_id'])) {
-                fputcsv($fh, array(
-                    $foundation['Foundation']['name'] . $foundation['Foundation']['founded'],
-                    $foundation['Foundation']['id'],
-                ));
+                $checkKey = $foundation['Foundation']['name'] . $foundation['Foundation']['founded'];
+                if (!isset($check[$checkKey])) {
+                    fputcsv($fh, array(
+                        $checkKey,
+                        $foundation['Foundation']['id'],
+                    ));
+                    $check[$checkKey] = true;
+                }
             }
         }
         fclose($fh);
@@ -94,13 +99,17 @@ class ImportShell extends AppShell {
         $db = ConnectionManager::getDataSource('default');
         $this->mysqli = new mysqli($db->config['host'], $db->config['login'], $db->config['password'], $db->config['database']);
         $this->dbQuery('SET NAMES utf8mb4;');
-        $stack = $urlKeys = array();
+        $foundationKeys = $this->Foundation->find('list', array(
+            'fields' => array('id', 'id'),
+            'conditions' => array('active_id IS NULL'),
+        ));
+        $stack = array();
         if (file_exists(__DIR__ . '/data/dbKeys.csv')) {
             $dbKeysFh = fopen(__DIR__ . '/data/dbKeys.csv', 'r');
             while ($line = fgetcsv($dbKeysFh, 1024)) {
                 $stack[$line[0]] = array(
                     'id' => $line[1],
-                    'is_new' => false,
+                    'is_new' => isset($foundationKeys[$line[1]]) ? false : true,
                     'linked_id' => '',
                     'linked_date' => 0,
                     'line' => array(),
@@ -108,16 +117,8 @@ class ImportShell extends AppShell {
             }
             fclose($dbKeysFh);
         }
-        if (file_exists(__DIR__ . '/data/urlKeys.csv')) {
-            $urlKeysFh = fopen(__DIR__ . '/data/urlKeys.csv', 'r');
-            while ($line = fgets($urlKeysFh, 512)) {
-                $line = trim($line);
-                $urlKeys[$line] = true;
-            }
-            fclose($urlKeysFh);
-        }
         $escapesKeys = array('主事務所', '目的', '捐助方法', '許可機關日期', '法人名稱', '法人代表');
-        $dateKeys = array('設立登記日期', '撤銷日期', '註銷日期', '公告日期', '收件日期');
+        $dateKeys = array('設立登記日期', '撤銷日期', '註銷日期', '公告日期', '收件日期', '登記日期');
         $valueStack = $directorStack = array();
         $sn = 1;
         foreach ($this->all_court AS $courtKey => $courtName) {
@@ -144,9 +145,6 @@ class ImportShell extends AppShell {
               )
              */
             while ($listLine = fgetcsv($listFh, 2048)) {
-                if (isset($urlKeys[$listLine[11]])) {
-                    continue;
-                }
                 /*
                  * $detail[?]
                   登記案號
@@ -186,13 +184,17 @@ class ImportShell extends AppShell {
                  */
 
                 $detail = json_decode(file_get_contents("{$this->dataPath}/{$listLine[10]}"), true);
-                if (empty($detail['法人名稱']))
+                if (empty($detail['法人名稱']) || $detail['結案原因'] === '未核定') {
                     continue;
+                }
                 foreach ($dateKeys AS $dateKey) {
                     $detail[$dateKey] = $this->getTwDate($detail[$dateKey]);
                 }
                 foreach ($escapesKeys AS $escapesKey) {
                     $detail[$escapesKey] = $this->mysqli->real_escape_string($detail[$escapesKey]);
+                }
+                if ($detail['設立登記日期'] === '1911-00-00' || $detail['設立登記日期'] === '0000-00-00') {
+                    $detail['設立登記日期'] = $detail['登記日期'];
                 }
                 $stackKey = $detail['法人名稱'] . $detail['設立登記日期'];
                 if (!isset($stack[$stackKey])) {
@@ -245,27 +247,34 @@ class ImportShell extends AppShell {
                     "'{$listLine[11]}'", //url_id
                     "'{$detail['收件日期']}')", //submitted
                 ));
-                foreach ($detail['董監事'] AS $director) {
-                    if (count($director) === 2) {
-                        $directorId = String::uuid();
-                        $director[1] = str_replace(array(' ', '　'), '', $director[1]);
-                        $director[1] = $this->mysqli->real_escape_string($director[1]);
-                        $directorStack[] = "('{$directorId}', '{$foundationId}', '{$director[1]}', '{$director[0]}')";
+                if (isset($detail['董監事'])) {
+                    foreach ($detail['董監事'] AS $director) {
+                        if (count($director) === 2) {
+                            $directorId = String::uuid();
+                            $director[1] = str_replace(array(' ', '　'), '', $director[1]);
+                            $director[1] = $this->mysqli->real_escape_string($director[1]);
+                            $directorStack[] = "('{$directorId}', '{$foundationId}', '{$director[1]}', '{$director[0]}')";
+                        }
                     }
                 }
+
                 ++$sn;
 
                 if ($sn > 50) {
                     $sn = 1;
                     $this->dbQuery('INSERT INTO `foundations` VALUES ' . implode(',', $valueStack) . ';');
-                    $this->dbQuery('INSERT INTO `directors` VALUES ' . implode(',', $directorStack) . ';');
+                    if (!empty($directorStack)) {
+                        $this->dbQuery('INSERT INTO `directors` VALUES ' . implode(',', $directorStack) . ';');
+                    }
                     $valueStack = $directorStack = array();
                 }
             }
         }
         if (!empty($valueStack)) {
             $this->dbQuery('INSERT INTO `foundations` VALUES ' . implode(',', $valueStack) . ';');
-            $this->dbQuery('INSERT INTO `directors` VALUES ' . implode(',', $directorStack) . ';');
+            if (!empty($directorStack)) {
+                $this->dbQuery('INSERT INTO `directors` VALUES ' . implode(',', $directorStack) . ';');
+            }
             $sn = 1;
             $valueStack = $directorStack = array();
         }
@@ -313,7 +322,7 @@ class ImportShell extends AppShell {
     public function getTwDate($str) {
         $str = trim($str);
         if (empty($str)) {
-            return '';
+            return '0000-00-00';
         }
         $dateParts = explode('/', $str);
         $dateParts[0] = intval($dateParts[0]) + 1911;
