@@ -23,8 +23,7 @@
         <div class="col-md-10"><?php echo $this->Olc->courts[$this->data['Foundation']['court']]; ?>&nbsp;</div>
         <div class="col-md-2">功能</div>
         <div class="col-md-10 btn-group">
-            <?php $prefix = substr($this->data['Foundation']['url_id'], -3); ?>
-            <a target="_blank" href="<?php echo "https://github.com/g0v/foundationtw/blob/master/output/details/{$this->data['Foundation']['court']}/{$prefix}/{$this->data['Foundation']['url_id']}.json"; ?>" class="btn btn-default">JSON 格式</a>
+            <a target="_blank" href="<?php echo "https://github.com/g0v/foundationtw/blob/master/{$this->data['Foundation']['url_id']}"; ?>" class="btn btn-default">JSON 格式</a>
             <a target="_blank" href="<?php echo $this->data['Foundation']['url']; ?>" class="btn btn-default">原始連結</a>
         </div>
     </div>
