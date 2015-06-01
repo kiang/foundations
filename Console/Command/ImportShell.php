@@ -28,7 +28,7 @@ class ImportShell extends AppShell {
         'KMD' => '福建金門地方法院',
     );
     public $dbKeys = array();
-    public $dataPath = '/home/kiang/public_html/foundationtw';
+    public $dataPath = '/home/kiang/github/foundationtw';
     public $mysqli = false;
 
     public function main() {
