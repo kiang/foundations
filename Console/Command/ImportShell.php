@@ -100,9 +100,9 @@ class ImportShell extends AppShell {
         $this->mysqli = new mysqli($db->config['host'], $db->config['login'], $db->config['password'], $db->config['database']);
         $this->dbQuery('SET NAMES utf8mb4;');
         $foundationKeys = $this->Foundation->find('list', array(
-            'fields' => array('id', 'id'),
-            'conditions' => array('active_id IS NULL'),
+            'fields' => array('id', 'url_id'),
         ));
+        $urlKeys = array_combine($foundationKeys, array_keys($foundationKeys));
         $stack = array();
         if (file_exists(__DIR__ . '/data/dbKeys.csv')) {
             $dbKeysFh = fopen(__DIR__ . '/data/dbKeys.csv', 'r');
@@ -206,7 +206,7 @@ class ImportShell extends AppShell {
                         'line' => array(),
                     );
                 }
-                $foundationId = String::uuid();
+                $foundationId = isset($urlKeys[$listLine[10]]) ? $urlKeys[$listLine[10]] : String::uuid();
                 $closed = 'NULL';
                 if (!empty($detail['撤銷日期'])) {
                     $closed = "'{$detail['撤銷日期']}'";
@@ -226,47 +226,49 @@ class ImportShell extends AppShell {
                     $stack[$stackKey]['line']['closed'] = $closed;
                     $stack[$stackKey]['line']['court'] = $courtKey;
                     $stack[$stackKey]['line']['url'] = $listLine[9];
-                    $stack[$stackKey]['line']['url_id'] = $listLine[11];
+                    $stack[$stackKey]['line']['url_id'] = $listLine[10];
                 }
-                $valueStack[] = implode(',', array(
-                    "('{$foundationId}'", //id
-                    "'{$stack[$stackKey]['id']}'", //active_id
-                    'NULL', //linked_id
-                    "'{$detail['法人名稱']}'", //name
-                    "'{$detail['類別']}'", //type
-                    "'{$detail['法人代表']}'", //representative
-                    "'{$detail['設立登記日期']}'", //founded
-                    "'{$detail['主事務所']}'", //address
-                    "'{$detail['目的']}'", //purpose
-                    "'{$detail['捐助方法']}'", //donation
-                    "'{$detail['許可機關日期']}'", //approved_by
-                    "'{$detail['財產總額']}'", //fund
-                    $closed, //closed
-                    "'{$courtKey}'", //court
-                    "'{$listLine[9]}'", //url
-                    "'{$listLine[11]}'", //url_id
-                    "'{$detail['收件日期']}')", //submitted
-                ));
-                if (isset($detail['董監事'])) {
-                    foreach ($detail['董監事'] AS $director) {
-                        if (count($director) === 2) {
-                            $directorId = String::uuid();
-                            $director[1] = str_replace(array(' ', '　'), '', $director[1]);
-                            $director[1] = $this->mysqli->real_escape_string($director[1]);
-                            $directorStack[] = "('{$directorId}', '{$foundationId}', '{$director[1]}', '{$director[0]}')";
+                if (!isset($urlKeys[$listLine[10]])) {
+                    $valueStack[] = implode(',', array(
+                        "('{$foundationId}'", //id
+                        "'{$stack[$stackKey]['id']}'", //active_id
+                        'NULL', //linked_id
+                        "'{$detail['法人名稱']}'", //name
+                        "'{$detail['類別']}'", //type
+                        "'{$detail['法人代表']}'", //representative
+                        "'{$detail['設立登記日期']}'", //founded
+                        "'{$detail['主事務所']}'", //address
+                        "'{$detail['目的']}'", //purpose
+                        "'{$detail['捐助方法']}'", //donation
+                        "'{$detail['許可機關日期']}'", //approved_by
+                        "'{$detail['財產總額']}'", //fund
+                        $closed, //closed
+                        "'{$courtKey}'", //court
+                        "'{$listLine[9]}'", //url
+                        "'{$listLine[10]}'", //url_id
+                        "'{$detail['收件日期']}')", //submitted
+                    ));
+                    if (isset($detail['董監事'])) {
+                        foreach ($detail['董監事'] AS $director) {
+                            if (count($director) === 2) {
+                                $directorId = String::uuid();
+                                $director[1] = str_replace(array(' ', '　'), '', $director[1]);
+                                $director[1] = $this->mysqli->real_escape_string($director[1]);
+                                $directorStack[] = "('{$directorId}', '{$foundationId}', '{$director[1]}', '{$director[0]}')";
+                            }
                         }
                     }
-                }
 
-                ++$sn;
+                    ++$sn;
 
-                if ($sn > 50) {
-                    $sn = 1;
-                    $this->dbQuery('INSERT INTO `foundations` VALUES ' . implode(',', $valueStack) . ';');
-                    if (!empty($directorStack)) {
-                        $this->dbQuery('INSERT INTO `directors` VALUES ' . implode(',', $directorStack) . ';');
+                    if ($sn > 50) {
+                        $sn = 1;
+                        $this->dbQuery('INSERT INTO `foundations` VALUES ' . implode(',', $valueStack) . ';');
+                        if (!empty($directorStack)) {
+                            $this->dbQuery('INSERT INTO `directors` VALUES ' . implode(',', $directorStack) . ';');
+                        }
+                        $valueStack = $directorStack = array();
                     }
-                    $valueStack = $directorStack = array();
                 }
             }
         }
