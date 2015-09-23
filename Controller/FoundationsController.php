@@ -17,23 +17,38 @@ class FoundationsController extends AppController {
     }
 
     function index($name = null) {
-        $scope = array(
-            'Foundation.active_id IS NULL',
-        );
-        if (!empty($name)) {
-            $name = Sanitize::clean($name);
-            $scope['Foundation.name LIKE'] = "%{$name}%";
+        $cPage = isset($this->request->params['named']['page']) ? $this->request->params['named']['page'] : '1';
+        $cSort = isset($this->request->params['named']['sort']) ? $this->request->params['named']['sort'] : '';
+        $cDirection = isset($this->request->params['named']['direction']) ? $this->request->params['named']['direction'] : '';
+        $cacheKey = "FoundationsIndex{$cSort}{$cDirection}{$name}{$cPage}";
+        $result = Cache::read($cacheKey, 'long');
+        if (!$result) {
+            $result = array();
+            $scope = array(
+                'Foundation.active_id IS NULL',
+            );
+            if (!empty($name)) {
+                $name = Sanitize::clean($name);
+                $scope['Foundation.name LIKE'] = "%{$name}%";
+            }
+            $this->paginate['Foundation'] = array(
+                'limit' => 20,
+                'order' => array('Foundation.submitted' => 'DESC'),
+            );
+
+            $result['items'] = $this->paginate($this->Foundation, $scope);
+            $result['paging'] = $this->request->params['paging'];
+            Cache::write($cacheKey, $result, 'long');
+        } else {
+            $this->request->params['paging'] = $result['paging'];
         }
-        $this->paginate['Foundation'] = array(
-            'limit' => 20,
-            'order' => array('Foundation.submitted' => 'DESC'),
-        );
+
         $this->set('url', array($name));
-        if(!empty($name)) {
+        if (!empty($name)) {
             $name = "{$name} 相關";
         }
         $this->set('title_for_layout', $name . '法人一覽 @ ');
-        $this->set('items', $this->paginate($this->Foundation, $scope));
+        $this->set('items', $result['items']);
     }
 
     function view($id = null) {
@@ -43,12 +58,12 @@ class FoundationsController extends AppController {
             ));
             if (!empty($this->data['Foundation']['linked_id'])) {
                 $linkedId = $this->data['Foundation']['linked_id'];
-            } elseif(isset($this->data['Foundation']['id'])) {
+            } elseif (isset($this->data['Foundation']['id'])) {
                 $linkedId = $this->data['Foundation']['id'];
             }
             if (!empty($this->data['Foundation']['active_id'])) {
                 $activeId = $this->data['Foundation']['active_id'];
-            } elseif(isset($this->data['Foundation']['id'])) {
+            } elseif (isset($this->data['Foundation']['id'])) {
                 $activeId = $this->data['Foundation']['id'];
             }
         }

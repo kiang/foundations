@@ -18,26 +18,37 @@ class DirectorsController extends AppController {
 
     function index($name = null) {
         if (!empty($name)) {
-            $name = Sanitize::clean($name);
-            $this->paginate['Director'] = array(
-                'fields' => array(
-                    'Director.title',
-                    'Foundation.id',
-                    'Foundation.name',
-                    'Foundation.submitted',
-                ),
-                'limit' => 20,
-                'contain' => array(
-                    'Foundation',
-                ),
-                'order' => array(
-                    'Foundation.submitted' => 'DESC',
-                ),
-            );
-            $items = $this->paginate($this->Director, array('Director.name' => $name));
+            $cPage = isset($this->request->params['named']['page']) ? $this->request->params['named']['page'] : '1';
+            $cacheKey = "DirectorsIndex{$name}{$cPage}";
+            $result = Cache::read($cacheKey, 'long');
+            if (!$result) {
+                $result = $scope = array();
+
+                $name = Sanitize::clean($name);
+                $this->paginate['Director'] = array(
+                    'fields' => array(
+                        'Director.title',
+                        'Foundation.id',
+                        'Foundation.name',
+                        'Foundation.submitted',
+                    ),
+                    'limit' => 20,
+                    'contain' => array(
+                        'Foundation',
+                    ),
+                    'order' => array(
+                        'Foundation.submitted' => 'DESC',
+                    ),
+                );
+                $result['items'] = $this->paginate($this->Director, array('Director.name' => $name));
+                $result['paging'] = $this->request->params['paging'];
+                Cache::write($cacheKey, $result, 'long');
+            } else {
+                $this->request->params['paging'] = $result['paging'];
+            }
         }
-        if (!empty($items)) {
-            $this->set('items', $items);
+        if (!empty($result['items'])) {
+            $this->set('items', $result['items']);
             $this->set('url', array($name));
             $this->set('name', $name);
             $this->set('title_for_layout', $name . ' @ ');
