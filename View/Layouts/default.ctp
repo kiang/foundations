@@ -13,77 +13,87 @@
         echo $this->Html->meta(array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1.0'));
         echo $this->Html->meta('icon');
         echo $this->Html->css('jquery-ui');
-        echo $this->Html->css('bootstrap');
+        echo $this->Html->css('bootstrap.min');
         echo $this->Html->css('default');
         ?>
     </head>
     <body>
-        <div style="float: right; width: 160px;">
-            <ins class="adsbygoogle"
-                 style="display:inline-block;width:160px;height:600px"
-                 data-ad-client="ca-pub-5571465503362954"
-                 data-ad-slot="2983418827"></ins>
-        </div>
-        <div class="container" id="base-container" style="float: left;">
-            <div id="header">
-                <h1><?php echo $this->Html->link('社團/財團法人資料檢索', '/'); ?></h1>
-                <div class="pull-right">
-                    <input type="text" id="keyword">
+        <nav class="navbar navbar-default">
+            <div class="container">
+                <div class="navbar-header">
+                    <?php echo $this->Html->link('社團 / 財團法人資料檢索', '/', array('class' => 'navbar-brand')); ?>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <p>&nbsp;</p>
+                    <p class="hidden-sm hidden-xs">&nbsp;</p>
+                    <form class="search-form">
+                        <div class="input-group input-group-lg">
+                            <input type="text" id="keyword" class="form-control" placeholder="搜尋…" autofocus>
+                            <div class="input-group-btn">
+                                <a href="#" class="btn btn-primary btn-foundation">找法人</a>
+                                <a href="#" class="btn btn-primary btn-director">找個人</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <p class="hidden-sm hidden-xs">&nbsp;</p>
+                <div class="col-md-12">
                     <div class="btn-group">
-                        <a href="#" class="btn btn-default btn-foundation">找法人</a>
-                        <a href="#" class="btn btn-default btn-director">找個人</a>
+                        <?php if (Configure::read('loginMember.id')): ?>
+                            <?php echo $this->Html->link('Foundations', '/admin/foundations', array('class' => 'btn')); ?>
+                            <?php echo $this->Html->link('Directors', '/admin/directors', array('class' => 'btn')); ?>
+                            <?php echo $this->Html->link('Members', '/admin/members', array('class' => 'btn')); ?>
+                            <?php echo $this->Html->link('Groups', '/admin/groups', array('class' => 'btn')); ?>
+                            <?php echo $this->Html->link('Logout', '/members/logout', array('class' => 'btn')); ?>
+                        <?php endif; ?>
+                        <?php
+                        if (!empty($actions_for_layout)) {
+                            foreach ($actions_for_layout as $title => $url) {
+                                echo $this->Html->link($title, $url, array('class' => 'btn'));
+                            }
+                        }
+                        ?>
                     </div>
                 </div>
             </div>
-            <div id="content">
-                <div class="btn-group">
-                    <?php if (Configure::read('loginMember.id')): ?>
-                        <?php echo $this->Html->link('Foundations', '/admin/foundations', array('class' => 'btn')); ?>
-                        <?php echo $this->Html->link('Directors', '/admin/directors', array('class' => 'btn')); ?>
-                        <?php echo $this->Html->link('Members', '/admin/members', array('class' => 'btn')); ?>
-                        <?php echo $this->Html->link('Groups', '/admin/groups', array('class' => 'btn')); ?>
-                        <?php echo $this->Html->link('Logout', '/members/logout', array('class' => 'btn')); ?>
-                    <?php endif; ?>
-                    <?php
-                    if (!empty($actions_for_layout)) {
-                        foreach ($actions_for_layout as $title => $url) {
-                            echo $this->Html->link($title, $url, array('class' => 'btn'));
-                        }
-                    }
-                    ?>
-                </div>
-
-                <?php echo $this->Session->flash(); ?>
-                <div id="viewContent">
-                    <?php echo $content_for_layout; ?>
-                </div>
+            <div class="row">
+                 <?php echo $this->Session->flash(); ?>
+                 <?php echo $content_for_layout; ?>
             </div>
-            <div id="footer" class="container">
-                <ins class="adsbygoogle"
-                     style="display:inline-block;width:728px;height:90px"
-                     data-ad-client="ca-pub-5571465503362954"
-                     data-ad-slot="5474383621"></ins>
-                <hr>
-                <?php echo $this->Html->link('江明宗 . 政 . 路過', 'http://k.olc.tw/', array('target' => '_blank')); ?>
-                / <?php echo $this->Html->link('關於本站', '/pages/about'); ?>
-                <?php if (!Configure::read('loginMember.id')): ?>
-                    / <?php echo $this->Html->link('Login', '/members/login'); ?>
-                <?php endif; ?>
-                <div id="fb-root"></div>
-                <script>(function (d, s, id) {
-                        var js, fjs = d.getElementsByTagName(s)[0];
-                        if (d.getElementById(id))
-                            return;
-                        js = d.createElement(s);
-                        js.id = id;
-                        js.src = "//connect.facebook.net/zh_TW/sdk.js#xfbml=1&appId=1393405437614114&version=v2.3";
-                        fjs.parentNode.insertBefore(js, fjs);
-                    }(document, 'script', 'facebook-jssdk'));</script>
-                <div class="col-md-6">
-                    <div class="fb-page" data-href="https://www.facebook.com/k.olc.tw" data-width="500" data-hide-cover="true" data-show-facepile="true" data-show-posts="false"></div>
-                </div>
-                <div class="col-md-6">
-                    <div class="fb-page" data-href="https://www.facebook.com/g0v.tw" data-width="500" data-hide-cover="true" data-show-facepile="true" data-show-posts="false"></div>
+            <div class="row">
+                <div class="col-md-12">
+                    <ins class="adsbygoogle"
+                         style="display:inline-block;width:728px;height:90px"
+                         data-ad-client="ca-pub-5571465503362954"
+                         data-ad-slot="5474383621"></ins>
+                    <hr>
+                    <?php echo $this->Html->link('江明宗 . 政 . 路過', 'http://k.olc.tw/', array('target' => '_blank')); ?>
+                    / <?php echo $this->Html->link('關於本站', '/pages/about'); ?>
+                    <?php if (!Configure::read('loginMember.id')): ?>
+                        / <?php echo $this->Html->link('Login', '/members/login'); ?>
+                    <?php endif; ?>
+                    <div id="fb-root"></div>
+                    <script>(function (d, s, id) {
+                            var js, fjs = d.getElementsByTagName(s)[0];
+                            if (d.getElementById(id))
+                                return;
+                            js = d.createElement(s);
+                            js.id = id;
+                            js.src = "//connect.facebook.net/zh_TW/sdk.js#xfbml=1&appId=1393405437614114&version=v2.3";
+                            fjs.parentNode.insertBefore(js, fjs);
+                        }(document, 'script', 'facebook-jssdk'));</script>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="fb-page" data-href="https://www.facebook.com/k.olc.tw" data-width="500" data-hide-cover="true" data-show-facepile="true" data-show-posts="false"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="fb-page" data-href="https://www.facebook.com/g0v.tw" data-width="500" data-hide-cover="true" data-show-facepile="true" data-show-posts="false"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -95,28 +105,31 @@
         echo $this->Html->script('bootstrap.min');
         echo $this->Html->script('olc');
         echo $this->Html->script('zhutil.min');
+        echo $this->fetch('scriptBottom');
         echo $scripts_for_layout;
         ?>
         <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <script type="text/javascript">
-                    (adsbygoogle = window.adsbygoogle || []).push({});
-                    $(function () {
-                        $('div#base-container').width($(window).width() - 250);
-                        $('a.btn-foundation').click(function () {
-                            var keyword = $('input#keyword').val();
-                            if (keyword !== '') {
-                                location.href = '<?php echo $this->Html->url('/foundations/index/'); ?>' + encodeURIComponent(keyword);
-                            }
-                            return false;
-                        });
-                        $('a.btn-director').click(function () {
-                            var keyword = $('input#keyword').val();
-                            if (keyword !== '') {
-                                location.href = '<?php echo $this->Html->url('/directors/index/'); ?>' + encodeURIComponent(keyword);
-                            }
-                            return false;
-                        });
-                    });
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+            $(function () {
+                $('.search-form').on('submit', function (e) {
+                    e.preventDefault();
+                })
+                $('.btn-foundation').on('click', function (e) {
+                    var keyword = $('#keyword').val();
+                    if (keyword !== '') {
+                        location.href = '<?php echo $this->Html->url('/foundations/index/'); ?>' + encodeURIComponent(keyword);
+                    }
+                    e.preventDefault();
+                });
+                $('.btn-director').on('click', function (e) {
+                    var keyword = $('#keyword').val();
+                    if (keyword !== '') {
+                        location.href = '<?php echo $this->Html->url('/directors/index/'); ?>' + encodeURIComponent(keyword);
+                    }
+                    e.preventDefault();
+                });
+            });
         </script>
         <?php if (Configure::read('debug') === 0) { ?>
             <script>
