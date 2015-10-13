@@ -1,58 +1,65 @@
-<div id="FoundationsIndex">
-    <p>
-        <?php
-        $url = array();
-        ?></p>
-    <div class="paging"><?php echo $this->element('paginator'); ?></div>
-    <table class="table table-bordered" id="FoundationsIndexTable">
-        <thead>
-            <tr>
-                <th>名稱</th>
-                <th>代表人</th>
-                <th>成立目的</th>
-                <th><?php echo $this->Paginator->sort('Foundation.fund', '財產總額', array('url' => $url)); ?></th>
-                <th><?php echo $this->Paginator->sort('Foundation.founded', '創立日期', array('url' => $url)); ?></th>
-                <th><?php echo $this->Paginator->sort('Foundation.submitted', '更新日期', array('url' => $url)); ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            $i = 0;
-            foreach ($items as $item) {
-                $class = null;
-                if ($i++ % 2 == 0) {
-                    $class = ' class="altrow"';
-                }
+<div id="FoundationsIndex" class="col-md-12">
+    <?php $url = array(); ?>
+    <div class="paginator-wrapper"><?php echo $this->element('paginator'); ?></div>
+    <?php
+    if (empty($items)) {
+        echo '<p>&nbsp;</p>';
+        echo $this->Html->tag(
+            'h1',
+            '<i class="glyphicon glyphicon-info-sign text-info"></i>',
+            array('escape' => false, 'style' => 'text-align: center')
+        );
+        echo $this->Html->tag(
+            'h2',
+            '噢不，沒有相關結果 :(',
+            array('class' => 'text-muted', 'style' => 'text-align: center')
+        );
+        echo '<p>&nbsp;</p>';
+    }
+    foreach ($items as $item) {
+    ?>
+        <div class="row foundation-list jumbotron">
+            <div class="col-md-12">
+                <?php
+                    echo $this->Html->link(
+                        $this->Html->tag(
+                            'h2',
+                            $item['Foundation']['name']
+                            ),
+                        array('action' => 'view', $item['Foundation']['id']),
+                        array('escape' => false)
+                    );
                 ?>
-                <tr<?php echo $class; ?>>
-                    <td>
-                        <?php echo $this->Html->link($item['Foundation']['name'], array('action' => 'view', $item['Foundation']['id'])); ?></td>
-                    <td><?php
-                        echo $this->Html->link($item['Foundation']['representative'], '/directors/index/' . $item['Foundation']['representative']);
-                        ?></td>
-                    <td class="col-md-4"><?php
-                        echo $item['Foundation']['purpose'];
-                        ?></td>
-                    <td><span class="fund-currency"><?php
-                            echo $item['Foundation']['fund'];
-                            ?></span></td>
-                    <td><?php
-                        echo $item['Foundation']['founded'];
-                        ?></td>
-                    <td><?php
-                        echo $item['Foundation']['submitted'];
-                        ?></td>
-                </tr>
-            <?php }; // End of foreach ($items as $item) {  ?>
-        </tbody>
-    </table>
-    <div class="paging"><?php echo $this->element('paginator'); ?></div>
+            </div>
+            <div class="col-md-12">
+                <?php 
+                echo $this->Html->tag(
+                    'blockquote',
+                    $item['Foundation']['purpose'],
+                    array(
+                        'class' => 'text-muted',
+                        'title' => $item['Foundation']['purpose']
+                    )
+                );
+                ?>
+            </div>
+            <div class="col-md-12">
+                <div class="foundation-list-attr">
+                    <?php
+                    echo '<span class="text-muted"><i class="glyphicon glyphicon-time"></i>&nbsp;創立於</span>&nbsp;';
+                    echo $this->Html->tag('span', $item['Foundation']['founded']);
+                    ?>
+                </div>
+                <div class="foundation-list-attr">
+                    <?php
+                    echo '<span class="text-muted"><i class="glyphicon glyphicon-usd"></i>&nbsp;財產總額</span>&nbsp;';
+                    echo $this->Html->tag('span', $item['Foundation']['fund'], array('class' => 'fund-currency'));
+                    ?>
+                </div>
+            </div>
+        </div>
+    <?php }; // End of foreach ($items as $item) {  ?>
+    <div class="paginator-wrapper"><?php echo $this->element('paginator'); ?></div>
     <div id="FoundationsIndexPanel"></div>
 </div>
-<script>
-    setTimeout(function () {
-        $('span.fund-currency').each(function () {
-            $(this).html(zhutil.approximate($(this).html(), {base: '萬', extra_decimal: 0}));
-        });
-    }, 800);
-</script>
+<?php echo $this->Html->script('index.js', array('inline' => false, 'block' => 'scriptBottom')); ?>
