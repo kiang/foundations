@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-TW">
+<!DOCTYPE html>
+<html lang="zh-TW">
     <head>
         <?php echo $this->Html->charset(); ?>
         <title><?php echo $title_for_layout; ?>社團/財團法人資料檢索</title><?php
@@ -10,6 +10,7 @@
             $desc_for_layout .= $trailDesc;
         }
         echo $this->Html->meta('description', $desc_for_layout);
+        echo $this->Html->meta(array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1.0'));
         echo $this->Html->meta('icon');
         echo $this->Html->css('jquery-ui');
         echo $this->Html->css('bootstrap');
@@ -27,7 +28,7 @@
             <div id="header">
                 <h1><?php echo $this->Html->link('社團/財團法人資料檢索', '/'); ?></h1>
                 <div class="pull-right">
-                    <input type="text" id="keyword" />
+                    <input type="text" id="keyword">
                     <div class="btn-group">
                         <a href="#" class="btn btn-default btn-foundation">找法人</a>
                         <a href="#" class="btn btn-default btn-director">找個人</a>
@@ -53,14 +54,16 @@
                 </div>
 
                 <?php echo $this->Session->flash(); ?>
-                <div id="viewContent"><?php echo $content_for_layout; ?></div>
+                <div id="viewContent">
+                    <?php echo $content_for_layout; ?>
+                </div>
             </div>
             <div id="footer" class="container">
                 <ins class="adsbygoogle"
                      style="display:inline-block;width:728px;height:90px"
                      data-ad-client="ca-pub-5571465503362954"
                      data-ad-slot="5474383621"></ins>
-                <hr />
+                <hr>
                 <?php echo $this->Html->link('江明宗 . 政 . 路過', 'http://k.olc.tw/', array('target' => '_blank')); ?>
                 / <?php echo $this->Html->link('關於本站', '/pages/about'); ?>
                 <?php if (!Configure::read('loginMember.id')): ?>
@@ -86,7 +89,7 @@
         </div>
         <div class="clearfix"></div>
         <?php
-        echo $this->element('sql_dump');
+        // echo $this->element('sql_dump');
         echo $this->Html->script('jquery');
         echo $this->Html->script('jquery-ui');
         echo $this->Html->script('bootstrap.min');
