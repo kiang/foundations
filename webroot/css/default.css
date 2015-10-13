@@ -238,3 +238,35 @@ div.code-coverage-results span.result-good {
     display: inline-block;
     margin: 0 5px;
 }
+
+.navbar-bottom {
+    margin: 3em 0 0 0;
+    height: 80px;
+    border-width: 4px 1px 0 1px;
+}
+
+.navbar-bottom ul {
+    padding: 20px 52px;
+}
+
+.navbar-bottom li {
+    list-style-type: none;
+    padding-right: 20px;
+}
+
+@media screen and (min-width: 768px) {
+    .navbar-bottom li {
+        display: inline;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .navbar-bottom li {
+        display: block;
+        margin-bottom: 5px;
+    }
+}
+
+.navbar-bottom li a {
+    font-size: 18px;
+}

@@ -69,13 +69,16 @@
                     <ins class="adsbygoogle"
                          style="display:inline-block;width:728px;height:90px"
                          data-ad-client="ca-pub-5571465503362954"
-                         data-ad-slot="5474383621"></ins>
-                    <hr>
-                    <?php echo $this->Html->link('江明宗 . 政 . 路過', 'http://k.olc.tw/', array('target' => '_blank')); ?>
-                    / <?php echo $this->Html->link('關於本站', '/pages/about'); ?>
-                    <?php if (!Configure::read('loginMember.id')): ?>
-                        / <?php echo $this->Html->link('Login', '/members/login'); ?>
-                    <?php endif; ?>
+                         data-ad-slot="5474383621">
+                    </ins>
+                     <div class="row">
+                        <div class="col-md-6">
+                            <div class="fb-page" data-href="https://www.facebook.com/k.olc.tw" data-width="500" data-hide-cover="true" data-show-facepile="true" data-show-posts="false"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="fb-page" data-href="https://www.facebook.com/g0v.tw" data-width="500" data-hide-cover="true" data-show-facepile="true" data-show-posts="false"></div>
+                        </div>
+                    </div>
                     <div id="fb-root"></div>
                     <script>(function (d, s, id) {
                             var js, fjs = d.getElementsByTagName(s)[0];
@@ -85,19 +88,33 @@
                             js.id = id;
                             js.src = "//connect.facebook.net/zh_TW/sdk.js#xfbml=1&appId=1393405437614114&version=v2.3";
                             fjs.parentNode.insertBefore(js, fjs);
-                        }(document, 'script', 'facebook-jssdk'));</script>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="fb-page" data-href="https://www.facebook.com/k.olc.tw" data-width="500" data-hide-cover="true" data-show-facepile="true" data-show-posts="false"></div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="fb-page" data-href="https://www.facebook.com/g0v.tw" data-width="500" data-hide-cover="true" data-show-facepile="true" data-show-posts="false"></div>
-                        </div>
-                    </div>
+                        }(document, 'script', 'facebook-jssdk'));
+                    </script>
                 </div>
             </div>
         </div>
-        <div class="clearfix"></div>
+        <footer class="navbar-bottom navbar navbar-default">
+            <div class="container">
+                <div class="row">
+                    <ul>
+                        <li>
+                            <?php echo $this->Html->link('江明宗 . 政 . 路過', 'http://k.olc.tw/', array('target' => '_blank')); ?>
+                        </li>
+                        <li>
+                            <?php echo $this->Html->link('關於本站', '/pages/about'); ?>
+                        </li>
+                        <?php
+                            if (!Configure::read('loginMember.id')) {
+                                echo $this->Html->tag(
+                                    'li',
+                                    $this->Html->link('登入', '/members/login')
+                                );
+                            }
+                        ?>
+                    </ul>
+                </div>
+            </div>
+        </footer>
         <?php
         // echo $this->element('sql_dump');
         echo $this->Html->script('jquery');
@@ -149,6 +166,5 @@
                 ga('send', 'pageview');
             </script>
         <?php } ?>
-        <?php echo $this->fetch('script'); ?>
     </body>
 </html>
