@@ -73,10 +73,10 @@
                     </ins>
                      <div class="row">
                         <div class="col-md-6">
-                            <div class="fb-page" data-href="https://www.facebook.com/k.olc.tw" data-width="500" data-hide-cover="true" data-show-facepile="true" data-show-posts="false"></div>
+                            <div class="fb-page" data-href="https://www.facebook.com/k.olc.tw" data-width="600" data-hide-cover="true" data-show-facepile="true" data-show-posts="false"></div>
                         </div>
                         <div class="col-md-6">
-                            <div class="fb-page" data-href="https://www.facebook.com/g0v.tw" data-width="500" data-hide-cover="true" data-show-facepile="true" data-show-posts="false"></div>
+                            <div class="fb-page" data-href="https://www.facebook.com/g0v.tw" data-width="600" data-hide-cover="true" data-show-facepile="true" data-show-posts="false"></div>
                         </div>
                     </div>
                     <div id="fb-root"></div>
