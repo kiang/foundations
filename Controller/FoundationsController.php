@@ -29,7 +29,10 @@ class FoundationsController extends AppController {
             );
             if (!empty($name)) {
                 $name = Sanitize::clean($name);
-                $scope['Foundation.name LIKE'] = "%{$name}%";
+                $scope['OR'] = array(
+                    'Foundation.name LIKE' => "%{$name}%",
+                    'Foundation.donation LIKE' => "%{$name}%",
+                );
             }
             $this->paginate['Foundation'] = array(
                 'limit' => 20,
