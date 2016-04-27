@@ -16,6 +16,13 @@
         echo $this->Html->css('bootstrap.min');
         echo $this->Html->css('default');
         ?>
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <script>
+        (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-5571465503362954",
+        enable_page_level_ads: true
+        });
+        </script>
     </head>
     <body>
         <nav class="navbar navbar-default">
@@ -125,9 +132,7 @@
         echo $this->fetch('scriptBottom');
         echo $scripts_for_layout;
         ?>
-        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
         <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
             $(function () {
                 $('.search-form').on('submit', function (e) {
                     e.preventDefault();
@@ -164,6 +169,7 @@
 
                 ga('create', 'UA-40055059-5', 'auto');
                 ga('send', 'pageview');
+                (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
         <?php } ?>
     </body>
