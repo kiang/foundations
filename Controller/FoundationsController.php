@@ -47,6 +47,7 @@ class FoundationsController extends AppController {
         }
 
         $this->set('url', array($name));
+        $this->set('name', $name);
         if (!empty($name)) {
             $name = "{$name} 相關";
         }
