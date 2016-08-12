@@ -110,6 +110,7 @@
                         <li>
                             <?php echo $this->Html->link('關於本站', '/pages/about'); ?>
                         </li>
+<li><a href="http://cdcb.judicial.gov.tw/abbs/wkw/WHD6K00.jsp" target="_blank">資料來源：司法院</a></li>
                         <?php
                             if (!Configure::read('loginMember.id')) {
                                 echo $this->Html->tag(
