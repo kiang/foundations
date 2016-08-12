@@ -1,5 +1,5 @@
 <?php
-
+App::uses('AppController', 'Controller');
 /* SVN FILE: $Id: pages_controller.php 7805 2008-10-30 17:30:26Z AD7six $ */
 /**
  * Static content controller.

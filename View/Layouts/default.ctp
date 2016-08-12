@@ -39,7 +39,7 @@
                     <p class="hidden-sm hidden-xs">&nbsp;</p>
                     <form class="search-form">
                         <div class="input-group input-group-lg">
-                            <input type="text" id="keyword" class="form-control" placeholder="搜尋…" autofocus>
+                            <input type="text" id="keyword" value="<?php echo isset($name) ? $name : ''; ?>" class="form-control" placeholder="搜尋…" autofocus>
                             <div class="input-group-btn">
                                 <a href="#" class="btn btn-primary btn-foundation">找法人</a>
                                 <a href="#" class="btn btn-primary btn-director">找個人</a>
@@ -110,6 +110,7 @@
                         <li>
                             <?php echo $this->Html->link('關於本站', '/pages/about'); ?>
                         </li>
+<li><a href="http://cdcb.judicial.gov.tw/abbs/wkw/WHD6K00.jsp" target="_blank">資料來源：司法院</a></li>
                         <?php
                             if (!Configure::read('loginMember.id')) {
                                 echo $this->Html->tag(

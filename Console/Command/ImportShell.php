@@ -30,6 +30,26 @@ class ImportShell extends AppShell {
     public $dbKeys = array();
     public $dataPath = '/home/kiang/github/foundationtw';
     public $mysqli = false;
+    public $approvedBy1 = array(
+        '一' => '1', '二' => '2', '三' => '3', '四' => '4', '五' => '5', '六' => '6', '七' => '7',
+        '八' => '8', '九' => '9', '１' => '1', '２' => '2', '３' => '3', '４' => '4', '５' => '5',
+        '６' => '6', '７' => '7', '８' => '8', '９' => '9', '０' => '0', 'Ｏ' => '0',
+        '（' => '(', '）' => ')', '　' => '', '︵' => '(', '︶' => ')'
+    );
+    public $approvedBy2 = array(
+        '/([1-9])十/',
+        '/十([1-9])/',
+        '/十/',
+        '/廿([1-9])/',
+        '/廿/',
+    );
+    public $approvedBy3 = array(
+        '${1}',
+        '1${1}',
+        '10',
+        '2${1}',
+        '20',
+    );
 
     public function main() {
         $this->batchImport();
@@ -65,29 +85,11 @@ class ImportShell extends AppShell {
         $approvedKeys = array();
         $fh = fopen(__DIR__ . '/data/approvedKeys.csv', 'w');
         foreach ($foundations AS $foundation) {
-            $foundation['Foundation']['approved_by'] = strtr($foundation['Foundation']['approved_by'], array(
-                '一' => '1', '二' => '2', '三' => '3', '四' => '4', '五' => '5', '六' => '6', '七' => '7',
-                '八' => '8', '九' => '9', '１' => '1', '２' => '2', '３' => '3', '４' => '4', '５' => '5',
-                '６' => '6', '７' => '7', '８' => '8', '９' => '9', '０' => '0', 'Ｏ' => '0',
-                '（' => '(', '）' => ')', '　' => '', '︵' => '(', '︶' => ')'
-            ));
-            $foundation['Foundation']['approved_by'] = preg_replace(array(
-                '/([1-9])十/',
-                '/十([1-9])/',
-                '/十/',
-                '/廿([1-9])/',
-                '/廿/',
-                    ), array(
-                '${1}',
-                '1${1}',
-                '10',
-                '2${1}',
-                '20',
-                    ), $foundation['Foundation']['approved_by']);
+            $foundation['Foundation']['approved_by'] = $this->cleanApprovedBy($foundation['Foundation']['approved_by']);
             if (false !== strpos($foundation['Foundation']['approved_by'], '字') && !isset($approvedKeys[$foundation['Foundation']['approved_by']])) {
                 fputcsv($fh, array(
                     $foundation['Foundation']['approved_by'],
-                    $foundation['Foundation']['id'],
+                    empty($foundation['Foundation']['active_id']) ? $foundation['Foundation']['id'] : $foundation['Foundation']['active_id'],
                 ));
                 $approvedKeys[$foundation['Foundation']['approved_by']] = true;
             }
@@ -103,7 +105,7 @@ class ImportShell extends AppShell {
             'fields' => array('id', 'url_id'),
         ));
         $urlKeys = array_combine($foundationKeys, array_keys($foundationKeys));
-        $stack = array();
+        $stack = $approvedKeys = $id2Stack = array();
         if (file_exists(__DIR__ . '/data/dbKeys.csv')) {
             $dbKeysFh = fopen(__DIR__ . '/data/dbKeys.csv', 'r');
             while ($line = fgetcsv($dbKeysFh, 1024)) {
@@ -114,9 +116,18 @@ class ImportShell extends AppShell {
                     'linked_date' => 0,
                     'line' => array(),
                 );
+                $id2Stack[$line[1]] = $line[0];
             }
             fclose($dbKeysFh);
         }
+        if (file_exists(__DIR__ . '/data/approvedKeys.csv')) {
+            $fh = fopen(__DIR__ . '/data/approvedKeys.csv', 'r');
+            while ($line = fgetcsv($fh, 512)) {
+                $approvedKeys[$line[0]] = $line[1];
+            }
+            fclose($fh);
+        }
+
         $escapesKeys = array('主事務所', '目的', '捐助方法', '許可機關日期', '法人名稱', '法人代表');
         $dateKeys = array('設立登記日期', '撤銷日期', '註銷日期', '公告日期', '收件日期', '登記日期');
         $valueStack = $directorStack = array();
@@ -197,6 +208,10 @@ class ImportShell extends AppShell {
                     $detail['設立登記日期'] = $detail['登記日期'];
                 }
                 $stackKey = $detail['法人名稱'] . $detail['設立登記日期'];
+                $approvedKey = $this->cleanApprovedBy($detail['許可機關日期']);
+                if (isset($approvedKeys[$approvedKey]) && isset($id2Stack[$approvedKeys[$approvedKey]])) {
+                    $stackKey = $id2Stack[$approvedKeys[$approvedKey]];
+                }
                 if (!isset($stack[$stackKey])) {
                     $stack[$stackKey] = array(
                         'id' => String::uuid(),
@@ -340,6 +355,11 @@ class ImportShell extends AppShell {
             echo $sql;
             exit();
         }
+    }
+
+    public function cleanApprovedBy($str) {
+        $str = strtr($str, $this->approvedBy1);
+        return preg_replace($this->approvedBy2, $this->approvedBy3, $str);
     }
 
 }
