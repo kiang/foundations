@@ -261,7 +261,7 @@ class ImportShell extends AppShell {
                         "'{$detail['目的']}'", //purpose
                         "'{$detail['捐助方法']}'", //donation
                         "'{$detail['許可機關日期']}'", //approved_by
-                        "'{$detail['財產總額']}'", //fund
+                        intval($detail['財產總額']), //fund
                         $closed, //closed
                         "'{$courtKey}'", //court
                         "'{$listLine[9]}'", //url
