@@ -230,6 +230,9 @@ class ImportShell extends AppShell {
                 } elseif (!empty($detail['註銷日期'])) {
                     $closed = "'{$detail['註銷日期']}'";
                 }
+                if($closed === "'0000-00-00'") {
+                    $closed = 'NULL';
+                }
 
                 if (empty($detail['收件日期'])) {
                     $detail['收件日期'] = $detail['公告日期'];
