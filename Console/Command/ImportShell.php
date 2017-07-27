@@ -329,7 +329,7 @@ class ImportShell extends AppShell {
                     "'{$item['line']['court']}'", //court
                     "'{$item['line']['url']}'", //url
                     "'{$item['line']['url_id']}'", //url_id
-                    "'{$item['line']['收件日期']}')", //submitted
+                    "{$item['line']['收件日期']})", //submitted
                 ));
                 ++$sn;
                 if ($sn > 50) {
