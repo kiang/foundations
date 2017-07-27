@@ -1,5 +1,7 @@
 <?php
 
+App::uses('CakeText', 'Utility');
+
 class ImportShell extends AppShell {
 
     public $uses = array('Foundation');
@@ -214,14 +216,14 @@ class ImportShell extends AppShell {
                 }
                 if (!isset($stack[$stackKey])) {
                     $stack[$stackKey] = array(
-                        'id' => String::uuid(),
+                        'id' => CakeText::uuid(),
                         'is_new' => true,
                         'linked_id' => '',
                         'linked_date' => 0,
                         'line' => array(),
                     );
                 }
-                $foundationId = isset($urlKeys[$listLine[10]]) ? $urlKeys[$listLine[10]] : String::uuid();
+                $foundationId = isset($urlKeys[$listLine[10]]) ? $urlKeys[$listLine[10]] : CakeText::uuid();
                 $closed = 'NULL';
                 if (!empty($detail['撤銷日期'])) {
                     $closed = "'{$detail['撤銷日期']}'";
@@ -266,7 +268,7 @@ class ImportShell extends AppShell {
                     if (isset($detail['董監事'])) {
                         foreach ($detail['董監事'] AS $director) {
                             if (count($director) === 2) {
-                                $directorId = String::uuid();
+                                $directorId = CakeText::uuid();
                                 $director[1] = str_replace(array(' ', '　'), '', $director[1]);
                                 $director[1] = $this->mysqli->real_escape_string($director[1]);
                                 $directorStack[] = "('{$directorId}', '{$foundationId}', '{$director[1]}', '{$director[0]}')";
