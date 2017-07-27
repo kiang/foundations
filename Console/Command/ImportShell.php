@@ -237,6 +237,11 @@ class ImportShell extends AppShell {
                 if (empty($detail['收件日期'])) {
                     $detail['收件日期'] = $detail['公告日期'];
                 }
+                if($detail['收件日期'] === '0000-00-00') {
+                    $detail['收件日期'] = 'NULL';
+                } else {
+                    $detail['收件日期'] = "'{$detail['收件日期']}'";
+                }
                 $detail['法人代表'] = str_replace(array(' ', '　'), '', $detail['法人代表']);
                 $foundationSubmitted = strtotime($detail['收件日期']);
                 if ($foundationSubmitted > $stack[$stackKey]['linked_date'] || $stack[$stackKey]['linked_date'] === 0) {
@@ -266,7 +271,7 @@ class ImportShell extends AppShell {
                         "'{$courtKey}'", //court
                         "'{$listLine[9]}'", //url
                         "'{$listLine[10]}'", //url_id
-                        "'{$detail['收件日期']}')", //submitted
+                        "{$detail['收件日期']})", //submitted
                     ));
                     if (isset($detail['董監事'])) {
                         foreach ($detail['董監事'] AS $director) {
